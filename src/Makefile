@@ -18,7 +18,7 @@ CLIB=-L$(LDIR)
 ODIR=obj
 
 # libraries to add to the compiler
-LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT
+LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT -lcerf
 
 # possible local header file
 _DEPS = 
