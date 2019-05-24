@@ -18,7 +18,7 @@ CLIB=-L$(LDIR)
 ODIR=obj
 
 # libraries to add to the compiler
-LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT -lcerf
+LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT 
 
 # possible local header file
 _DEPS = 
@@ -34,7 +34,7 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 MAIN_SOURCE = curlyP
 
 # put here also all the other sources 
-SOURCES = $(MAIN_SOURCE).cpp
+SOURCES = $(MAIN_SOURCE).cpp 
 
 _OBJ = $(patsubst %.cpp,%.o,$(SOURCES))
 # Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj) 
