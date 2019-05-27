@@ -5,8 +5,9 @@
 #include <astro/cosmology/cosmologyBase.h>
 #include <astro/cosmology/cosmicStructures.h>
 #include <astro/io/functionWriter.h>
-#include <KFT/particleDynamics/newZeldovichParticleDynamics.h>
 #include <astro/utilities/utilities.h>
+
+#include <KFT/particleDynamics/newZeldovichParticleDynamics.h>
 
 //#include "../src/particleDynamics/newZeldovichParticleDynamics.h"
 
@@ -18,64 +19,23 @@ int main ()
 	astro::cosmicStructures cos_struct (&cos_model);
 	KFT::newZeldovichParticleDynamics prop (&cos_model, a_min);
 
-        std::ofstream outfile;
-        outfile.open("g_qp.txt"); //std::ios_base::app if you want to append it
-
-        outfile  <<  "Computing g_qp(a1,a2), horizontal is a2, vertical is a1 " << std::endl;
-	// number of steps and parameters
+    	// number of steps and parameters
 	const int n = 256;
 	const double a_max = 1;
 	const double k_min = 0.1;
 	const double k_max = 100;
 
-        // propagator g_qp (a,a')
-        // put the first row with the values of a'
-        for(int j =0; j<n; j++)
-        {
-            double a_temp2 = astro::x_logarithmic (j, n, a_min, a_max);
-            outfile << std::setw(10) << a_temp2  << "\t";
-        }
-        outfile << std::endl;
-        for (int i=0; i< n; i++)
-        {
-            double a_temp1 = astro::x_logarithmic (i, n, a_min, a_max);
-            outfile << std::setw(10) << a_temp1 << "\t";
-            for(int j =0; j<n; j++)
-            {
-                double a_temp2 = astro::x_logarithmic (j, n, a_min, a_max);
-                double g_qptemp = prop.g_qp (a_temp1, a_temp2);
-                outfile << std::setw(10) << g_qptemp  << "\t";
-            }
-            outfile << std::endl;
-        }
-	outfile.close();
-
-    //  writing Q stuff
-
-    std::ifstream readfile;
-    readfile.open("g_qp.txt")
-
-
+        //  writing Q stuff
        std::ofstream Qfile;
         Qfile.open("Q.txt");
-        Qfile  <<  "Computing Q(a,k), horizontal is a2, vertical is a1 " << std::endl;
-
-        // propagator g_qp (a,a')
-        // put the first row with the values of a'
-        for(int j =0; j<n; j++)
-        {
-            double a_temp = astro::x_logarithmic (j, n, a_min, a_max);
-            Qfile << std::setw(10) << a_temp  << "\t";
-        }
-        Qfile << std::endl;
         for (int i=0; i< n; i++)
         {
             double k = astro::x_logarithmic (i, n, k_min, k_max);
-            Qfile << std::setw(10) << k << "\t";
             for(int j =0; j<n; j++)
             {
-                double a_temp = astro::x_logarithmic (j, n, a_min, a_max);
-                double Q = prop.g_qp*prop.g_qp * 0.33*k*k
+                double a = astro::x_logarithmic (j, n, a_min, a_max);
+                double propagator = prop.g_qp(a);
+                double Q = propagator * propagator * 0.33*k*k;
                 Qfile << std::setw(10) << Q  << "\t";
             }
             Qfile << std::endl;
