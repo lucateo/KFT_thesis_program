@@ -18,32 +18,32 @@ CLIB=-L$(LDIR)
 ODIR=obj
 
 # libraries to add to the compiler
-LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT 
+LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT
 
 # possible local header file
-_DEPS = 
+_DEPS =
 
-# Put local header file in _DEPS and the one in include folder from IDIR, $ symbol is to call the variables 
+# Put local header file in _DEPS and the one in include folder from IDIR, $ symbol is to call the variables
 # you defined; % is for all the files under the IDIR directory;
 # $(patsubst pattern,replacement,text) Finds whitespace-separated words in text that match pattern and
-# replaces them with replacement; here every time you find something in _DEPS, you 
-# substitute with IDIR/something (so the output in this case will be DEPS = ../include/something.h 
+# replaces them with replacement; here every time you find something in _DEPS, you
+# substitute with IDIR/something (so the output in this case will be DEPS = ../include/something.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 # The main cpp source that will be also the name of the program, usually change only this
 MAIN_SOURCE = curlyP
 
-# put here also all the other sources 
-SOURCES = $(MAIN_SOURCE).cpp 
+# put here also all the other sources
+SOURCES = $(MAIN_SOURCE).cpp
 
 _OBJ = $(patsubst %.cpp,%.o,$(SOURCES))
-# Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj) 
+# Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj)
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 # targets are the object files in directory specified by ODIR, % is a special character (like * in bash);
 # the prerequisites are the .c (.cpp,.cxx) files that have same name as the .o file (represented by %) and the
 # header file in DEPS, that is compile looking at changes in the prerequisites
-# $@ looks at the left of : whereas $< is the first prerequisite (here %.cpp, the source file) 
+# $@ looks at the left of : whereas $< is the first prerequisite (here %.cpp, the source file)
 $(ODIR)/%.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 

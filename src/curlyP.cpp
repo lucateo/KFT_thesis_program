@@ -24,12 +24,12 @@
 
 // Parameters
 const double k_0=10;
-const double A = 100; // normalization
+const double A = 10; // normalization
 const double nbins = 32; // seems good also with 32
-const double k_max = 10000.0;
+const double k_max = 1000.0;
 const double k_min = 0.001;
 const double q_min = 0.001;
-const double q_max = 10000.0;
+const double q_max = 1000.0;
 const double sigma_gauss = 1; // sigma for Gauss initial condition
 
 // Cosmology setting
@@ -80,6 +80,13 @@ double p_initial (double k)
     }
 };
 
+double Q_factor(double a, double k)
+{
+    double propagator = prop.g_qp(a);
+    double Q = propagator * propagator * 0.33*k*k*sigma_1;
+    return Q;
+}
+
 double B_1 (double q)
 {
     std::function<double (double, double)> p= [](double q, double k)
@@ -107,6 +114,7 @@ double integral_mu (double q, double k)
     astro::osc_integrator::Integrand p1 = p;
     astro::osc_integrator Integral	(p1, astro::OSC_COSINE,
         0,0,1, astro::LOG_SPACING, nbins );
+    std::cout << q << std::endl;
     return Integral(q);
 };
 
@@ -119,10 +127,12 @@ double integral_q (double k)
 };
 
 
-double preFactorCurlyP(double k, double a)
+double CurlyP(double a, double k)
 {
     double g_qp = prop.g_qp(a);
-    return 2* M_PI *exp(-g_qp *g_qp*k*k);
+    double prefact = 2* M_PI *exp(-g_qp *g_qp*k*k);
+    return prefact * integral_q(k);
+
 };
 
 
@@ -159,15 +169,77 @@ void writeCurlyP2(double k)
 };
 
 
+// GradV functions
+double J (double y) {return 1 + (1 - y*y)/(2*y) *log((1 + y)/(1-y));};
+
+double integral_y (double a, double k)
+{
+    double g_qp = prop.g_qp(a);
+    std::function<double (double)> p = [k,a,g_qp](double y)
+        {return y*y * exp(-sigma_1*g_qp*g_qp *k*k*y*y/3 ) * p_initial(k*y)*J(y) ;};
+
+/*     std::cout << J(0.5) << std::endl; */
+    // std::cout << p_initial(0.6) << std::endl;
+    // std::cout << p(0.8) << std::endl;
+    astro::integrator kernel (p);
+    return kernel(0.001, 0.999);
+
+};
+
+double gradV (double a, double k)
+{
+    double D_plus = cos_struct.Dplus(a);
+    double g = prop.g(a)    ;
+    double prefact = 3*a*k*k*D_plus * D_plus /(8*M_PI*M_PI*g*g);
+    return prefact*integral_y(a,k);
+};
+
+
+// S_I functions
+
+double integrand_SI(double a, double k)
+{
+    double gdot = prop.g_dot(a);
+    double h =  prop.h(a);
+    double g = prop.g(a);
+    double prefact =gdot * h/(g*g);
+    std::function<double (double)> p = [k](double a1)
+        {return prop.g(a1) *( prop.jacobian(a1)/a1) * gradV(a1,k)  ;};
+    astro::integrator kernel (p);
+    return gradV(a,k) + prefact * kernel(0.0, a);
+
+}
+
+double S_I (double a, double k)
+{
+    std::function<double (double)> p = [a,k](double a1)
+        {return prop.g_qp(a,a1) *( prop.jacobian(a1)/a1) * integrand_SI(a1,k)  ;};
+    astro::integrator kernel (p);
+    return 2*k*kernel(0,a);
+}
+
+double fullPowerSpectrum (double a, double k)
+{
+    double Q_D = Q_factor(a,k);
+    double curlyP = CurlyP(a,k);
+    double SI = S_I(a,k);
+    return exp(-Q_D + SI) * curlyP;
+}
+
+
 int main ()
 {
     determine_sigma();
-    std::cout << preFactorCurlyP(10,0.1) << std::endl;
+    double a = 1;
+    double k = 7;
+    double q = 1;
+    /* double SI = S_I(a,k); */
 
+    /* double Q = Q_factor(a,k); */
+    double mu=  integral_mu(q,k);
+   // double curlypFactor = CurlyP(a,k);
+    std::cout << mu << std::endl;
 
-
-
-
-
-    return 0;
+	return 0;
 }
+
