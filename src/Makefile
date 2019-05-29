@@ -31,10 +31,10 @@ _DEPS =
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 # The main cpp source that will be also the name of the program, usually change only this
-MAIN_SOURCE = curlyP
+MAIN_SOURCE = main
 
 # put here also all the other sources
-SOURCES = $(MAIN_SOURCE).cpp
+SOURCES = $(MAIN_SOURCE).cpp functions.cpp
 
 _OBJ = $(patsubst %.cpp,%.o,$(SOURCES))
 # Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj)
