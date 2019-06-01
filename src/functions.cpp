@@ -47,7 +47,6 @@ double Powermine::sigma_1 ()
          return (A*k_0*k_0)/(2*M_PI * M_PI *((m_number_in/10) - 2));
 }
 
-// Then for the real Q factor I have to multiply this by sigma_1
 double Powermine::QFactor (double a, double k)
 {
     double prop = propagator->g_qp(a);
@@ -76,38 +75,29 @@ double Powermine::B_2 (double q)
     return Integral(q);
 }
 
-double Powermine::integral_mu (double q, double k)
+double Powermine::Integral2DLevin(double k)
 {
-    std::function<double (double, double)> p = [q, this](double qk, double mu)
-        {return 2 * exp(mu * mu * B_1(q)) - 1 ;};
-    astro::osc_integrator::Integrand p1 = p;
-    astro::osc_integrator Integral	(p1, astro::OSC_COSINE,
-        0,0,1, astro::LOG_SPACING, nbins );
-    return Integral(q);
+    std::function<double (double, double, double)>
+    kernel = [this] (double k, double q, double mu)
+    {    return q*q * exp(B_2(q)) *(exp(mu * mu * B_1(q)) - 1);};
+    astro::LC_2d_integrator
+    Test (kernel, astro::OSC_COSINE, 0, -1.0, 1.0, q_min, q_max, 8, 8);
+    return Test (k);
 }
 
-double Powermine::integral_q (double k)
-{
-    std::function<double (double)> p = [k, this](double q)
-        {return q*q * exp(B_2(q)) * integral_mu(q,k) ;};
-    astro::integrator kernel (p);
-    return kernel(q_min, q_max);
-}
 double Powermine::CurlyP(double a, double k)
 {
     double g_qp = propagator->g_qp(a);
     double prefact = 2* M_PI *exp(-g_qp *g_qp*k*k);
-    return prefact * integral_q(k);
-
+    return prefact * Integral2DLevin(k);
 }
 
 // Plotting functions
-
-void Powermine::writeCurlyP1()
+void Powermine::writeB1B2()
 {
     int n = 1000;
     std::ofstream openFile;
-    openFile.open("curlyP.txt");
+    openFile.open("data/curlyP.txt");
     for (int i=0; i< n; i++)
     {
         double q = astro::x_logarithmic (i, n, q_min, q_max);
@@ -117,20 +107,71 @@ void Powermine::writeCurlyP1()
 	openFile.close();
 }
 
-void Powermine::writeCurlyP2(double k)
+void Powermine::writeQ(double a)
 {
-    int n = 100;
+    int n = 30;
+    std::ostringstream os;
+    os << "data/Q_a_" << a << "_n_initial_"<< m_number_in << "_A_" << A << "_k_0_" << k_0 << ".txt";
+
     std::ofstream openFile;
-    openFile.open("curlyP2.txt");
+    openFile.open(os.str());
     for (int i=0; i< n; i++)
     {
-        double q = astro::x_logarithmic (i, n, q_min, q_max);
+        double k = astro::x_logarithmic (i, n, k_min, k_max);
 
-        openFile << std::setw(15) << q << "\t" << std::setw(15)/*  << k  << "\t" <<
-            std::setw(15) */ << integral_mu(q,k) << std::endl;
+        openFile << std::setw(15) << k << "\t" << std::setw(15)  << QFactor(a,k) << std::endl;
     }
 	openFile.close();
 }
+
+void Powermine::writeSfunctions(double a)
+{
+    int n = 30;
+    std::ostringstream os;
+    os << "data/Sfunction_a_" << a << "_n_initial_"<< m_number_in << "_A_" << A << "_k_0_" << k_0 << ".txt";
+
+    std::ofstream openFile;
+    openFile.open(os.str());
+    for (int i=0; i< n; i++)
+    {
+        double k = astro::x_logarithmic (i, n, k_min, k_max);
+
+        openFile << std::setw(15) << k << "\t" << std::setw(15)  << integral_y(a,k) << "\t" <<
+            std::setw(15)  << gradV(a,k) <<  "\t" << std::setw(15)  << integrand_SI(a,k)
+            << "\t" << std::setw(15) << S_I(a,k)  << std::endl;
+    }
+	openFile.close();
+}
+
+void Powermine::writeAll(double a)
+{
+    int n = 30;
+    std::ostringstream os;
+    os << "data/All_a_" << a << "_n_initial_"<< m_number_in << "_A_" << A << "_k_0_" << k_0 << ".txt";
+
+    std::ofstream openFile;
+    openFile.open(os.str());
+
+    // Line with the parameters
+    openFile << std::setw(15) << a << "\t" << std::setw(15)  << m_number_in << "\t" <<
+            std::setw(15)  << A <<  "\t" << std::setw(15)  << k_0 << std::endl;
+    openFile << std::endl;
+
+    for (int i=0; i< n; i++)
+    {
+        double k = astro::x_logarithmic (i, n, 0.001,1000.0);
+
+        openFile << std::setw(15) << k << "\t" << std::setw(15)  << QFactor(a,k) << "\t" <<
+            std::setw(15)  << integrand_SI(a,k) <<  /* "\t" << std::setw(15)  << CurlyP(a,k) << */ std::endl;
+    }
+	openFile.close();
+}
+
+
+
+
+
+
 
 // GradV functions
 double J (double y) {return 1 + (1 - y*y)/(2*y) *log((1 + y)/(1-y));}
@@ -186,4 +227,47 @@ double Powermine::fullPowerSpectrum (double a, double k)
 
 
 
+
+// Dead functions (keep it just for reference)
+
+// double Powermine::integral_mu (double q, double k)
+// {
+//     std::function<double (double, double)> p = [k, this](double qk, double mu)
+//         {return 2 * exp(mu * mu * B_1(qk/k)) - 1 ;};
+//     astro::osc_integrator::Integrand p1 = p;
+//     astro::osc_integrator Integral	(p1, astro::OSC_COSINE,
+//         0,0,1, astro::LOG_SPACING, nbins );
+//     return Integral(q);
+// }
+//
+// double Powermine::integral_q (double k)
+// {
+//     std::function<double (double)> p = [k, this](double q)
+//         {return q*q * exp(B_2(q)) * integral_mu(q,k) ;};
+//     astro::integrator kernel (p);
+//     return kernel(q_min, q_max);
+// }
+//
+// double Powermine::integralq_first(double k, double mu)
+// {
+//     std::function<double (double, double)> p = [k, this](double kmu , double q)
+//         {return q*q * exp(B_2(q)) *(exp( (kmu*kmu/(k*k))*B_1(q) ) - 1);};
+//     astro::osc_integrator::Integrand p1 = p;
+//     astro::osc_integrator Integral	(p1, astro::OSC_COSINE,
+//         0,q_min,q_max, astro::LOG_SPACING, nbins );
+//     return Integral(mu);
+// }
+//
+// double Powermine::integralmu_second (double k)
+// {
+//     std::function<double (double)> p = [k, this](double mu)
+//         {return 2*integralq_first(k,mu) ;};
+//     astro::integrator kernel (p);
+//     double mu_min = 0;
+//     double mu_max = 1;
+//     return kernel(mu_min, mu_max);
+// }
+//
+//
+/*  */
 
