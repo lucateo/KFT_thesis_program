@@ -34,7 +34,7 @@ double Powermine::p_initial (double k)
     }
 }
 
-// \sigma_1^2 in the main test
+// \sigma_1^2 in the main text
 double Powermine::sigma_1 ()
 {
     if (m_number_in == 0)
@@ -55,8 +55,10 @@ double Powermine::QFactor (double a, double k)
     return Q;
 }
 
+// B_1, B_2 are defined in chapter 4
 double Powermine::B_1 (double q)
 {
+    // Trying to integrate step by step
     double sum= 0.0;
     std::vector<double> bins (nbins+1);
     for (int i = 0; i < nbins+1; i++)
@@ -93,7 +95,7 @@ double Powermine::B_2 (double q)
 
     for (int i = 0; i < nbins; i++)
     {
-        astro::LC_integrator integrate (integrand, astro::OSC_SPH_BESSEL, 2, bins[i], bins[i+1], 16);
+        astro::LC_integrator integrate (integrand, astro::OSC_SPH_BESSEL, 1, bins[i], bins[i+1], 16);
         sum += integrate (q);
     }
     return sum;
@@ -138,7 +140,7 @@ double Powermine::CurlyP(double a, double k)
 // J(y) in the main text
 double J (double y) {return 1 + (1 - y*y)/(2*y) *log((1 + y)/(1-y));}
 
-// Just the integral in the y variable for gradV
+// Just the integral in the y variable for gradient V
 double Powermine::integral_y (double a, double k)
 {
     double g_qp = propagator->g_qp(a);
@@ -150,6 +152,7 @@ double Powermine::integral_y (double a, double k)
     return kernel(0.0, 1.0);
 }
 
+// averaged potential gradient
 double Powermine::gradV (double a, double k)
 {
     double D_plus = cosmic_structures->Dplus(a);
@@ -175,7 +178,7 @@ double Powermine::integrand_SI(double a, double k)
 
 }
 
-// the full S_I
+// the full S_I (without the -i factor)
 double Powermine::S_I (double a, double k)
 {
     std::function<double (double)> p = [this,a,k](double a1)
