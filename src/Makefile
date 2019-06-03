@@ -1,14 +1,12 @@
 # IDIR is the directory for header files
 IDIR =/usr/local/include
-# g++ -L/usr/local/lib bessel_prova.o -lastrocpp -lgsl -lgslcblas -lm
-# g++ -Wall -I/usr/local/include -c bessel_prova.cpp
 # This is the compiler
 CC=g++
 
 # flags, i.e. option to pass to the compiler (tell where to search for stuff)
 CFLAGS=-I$(IDIR)
 
-# directory of libraries
+# directory of possible libraries
 LDIR =/usr/local/lib
 
 # Option to put for compiling .o objects
@@ -34,7 +32,7 @@ DEPS = ../include/powerSpectraTeodori.h
 MAIN_SOURCE = main
 
 # put here also all the other sources
-SOURCES = $(MAIN_SOURCE).cpp functions.cpp
+SOURCES = $(MAIN_SOURCE).cpp functions.cpp write.cpp 
 
 _OBJ = $(patsubst %.cpp,%.o,$(SOURCES))
 # Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj)

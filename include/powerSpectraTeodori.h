@@ -15,6 +15,7 @@
 #include <astro/io/functionWriter.h>
 #include <astro/utilities/integrator.h>
 #include <astro/utilities/utilities.h>
+#include <astro/utilities/LC_integrator.h>
 #include <astro/utilities/LC_2d_integrator.h>
 
 #include <KFT/particleDynamics/newZeldovichParticleDynamics.h>
@@ -39,7 +40,7 @@ class Powermine
     /// a standard \f$ \Lambda \f$CDM model.
     astro::cosmologyBase * cosmological_model;
     /// Pointer to the library cosmicStructures, that provides utilities like
-    /// grow factors and such; it is initialized with the cosmological_model;
+    /// growth factors and such; it is initialized with the cosmological_model;
     astro::cosmicStructures * cosmic_structures;
     /// New Zel'dovich propagator utilities.
     KFT::newZeldovichParticleDynamics * propagator;
@@ -66,35 +67,36 @@ class Powermine
     double QFactor (double a, double k);///< The exponential damping \f$ Q_\mathrm{D} \f$ factor
     double B_1 (double q); ///< Computes the integral in \f$ j_2(q) \f$
     double B_2 (double q);  ///< Computes the integral in \f$ j_1(q) \f$
+    double Integral2DLevin(double k);///< the 2D Levin integral for CurlyP
     double CurlyP(double a, double k); ///< The complete \f$ \bar{\mathcal{P}} \f$
-
-    double Integral2DLevin(double k);
-
-    void writeB1B2(); ///< Function for writing data in text file, used then for plotting/analysis
-    void writeQ(double a);
-    void writeSfunctions(double a);
-    void writeAll(double a);
-
-
+        
     double integral_y (double a, double k); ///< Integral arising in computation of \f$ S_\mathrm{I} \f$
     double gradV (double a, double k); ///< The Born averaged gradient of the interacion potential
     double integrand_SI(double a, double k); ///< The integrand of \f$ S_\mathrm{I} \f$
     double S_I (double a, double k);///< The Born averaged interacting action
     double fullPowerSpectrum (double a, double k); ///< The complete non linearly evolved power spectrum
 
+    // Plotting functions
+    void writeB1B2(); ///< Function for writing data in text file, used then for plotting/analysis
+    void writeQ(double a);///< Function for writing data in text file, used then for plotting/analysis
+    void writeSfunctions(double a);///< Function for writing data in text file, used then for plotting/analysis
+    void writeAll(double a);///< Function for writing data in text file, used then for plotting/analysis
+    void printTestSI(double a);///< Function for print in terminal
+    void printTestB1B2();///< Function for print in terminal
+    void printTestintegralLevin(double a);///< Function for print in terminal
+    void printTestFullP(double a);
 
     // Parameters
     double k_0=10;
     double A = 10; ///< Normalization of the power spectrum, to be determined by \f$ \sigma_8 \f$
-    double nbins = 32; // seems good also with 32
-    double k_max = 10000.0*k_0; ///< The maximum \f$ k \f$ used in integration
-    double k_min = 0.0001;///< The minimum \f$ k \f$ used in integration
-    double q_min = 0.001;///< The minimum \f$ q \f$ used in integration
+    double nbins = 32; ///< Parameter for astro::osc_integrator utilities
+    double k_max = k_0*(1.0e5); ///< The maximum \f$ k \f$ used in integration
+    double k_min = 1.0e-5;///< The minimum \f$ k \f$ used in integration
+    double q_min = 1.0e-5;///< The minimum \f$ q \f$ used in integration
     double q_max = 1.0e5;///< The maximum \f$ q \f$ used in integration
     double sigma_gauss = 1; ///< sigma for Gauss initial condition
     int m_number_in;///< It determines the initial condition
     double a_min = 0.001;///< The scale factor corresponding to the initial time considered
-
 };
 
 
