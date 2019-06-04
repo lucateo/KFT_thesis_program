@@ -139,7 +139,7 @@ double Powermine::integral_y (double a, double k)
     return kernel(0.0, 1.0);
 }
 
-// averaged potential gradient
+// averaged potential gradient (without -i factor)
 double Powermine::gradV (double a, double k)
 {
     double D_plus = cosmic_structures->Dplus(a);
@@ -148,7 +148,7 @@ double Powermine::gradV (double a, double k)
     return prefact*integral_y(a,k);
 }
 
-// S_I functions
+// S_I integrand (without i factor)
 double Powermine::integrand_SI(double a, double k)
 {
     double gdot = propagator->g_dot(a);
@@ -165,7 +165,7 @@ double Powermine::integrand_SI(double a, double k)
 
 }
 
-// the full S_I (without the -i factor)
+// the full iS_I
 double Powermine::S_I (double a, double k)
 {
     std::function<double (double)> p = [this,a,k](double a1)

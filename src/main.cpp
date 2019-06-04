@@ -4,7 +4,7 @@ int main ()
 {
     // Initialize the power spectrum
     astro::cosmologyBase cos_model;
-    Powermine spectrum (0, &cos_model);
+    Powermine spectrum (4, &cos_model);
 
     // Parameters used in trial functions
     double a = 0.01;
