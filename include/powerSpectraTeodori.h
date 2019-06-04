@@ -65,10 +65,9 @@ class Powermine
     double p_initial (double k);
     double sigma_1(); ///< \f$ \sigma_1^2 \f$ factor
     double QFactor (double a, double k);///< The exponential damping \f$ Q_\mathrm{D} \f$ factor
-    double B_1 (double q); ///< Computes the integral in \f$ j_2(q) \f$
-    double B_2 (double q);  ///< Computes the integral in \f$ j_1(q) \f$
-    double Integral2DLevin(double k);///< the 2D Levin integral for CurlyP
-    double CurlyP(double a, double k); ///< The complete \f$ \bar{\mathcal{P}} \f$
+    double a_2 (double q); ///< Computes the integral in \f$ j_2(q) \f$
+    double a_1 (double q);  ///< Computes the integral in \f$ j_1(q) \f$
+    double Integral2DLevin(double a, double k);///< the 2D Levin integral for CurlyP
         
     double integral_y (double a, double k); ///< Integral arising in computation of \f$ S_\mathrm{I} \f$
     double gradV (double a, double k); ///< The Born averaged gradient of the interacion potential
@@ -77,12 +76,12 @@ class Powermine
     double fullPowerSpectrum (double a, double k); ///< The complete non linearly evolved power spectrum
 
     // Plotting functions
-    void writeB1B2(); ///< Function for writing data in text file, used then for plotting/analysis
+    void writea1a2(); ///< Function for writing data in text file, used then for plotting/analysis
     void writeQ(double a);///< Function for writing data in text file, used then for plotting/analysis
     void writeSfunctions(double a);///< Function for writing data in text file, used then for plotting/analysis
     void writeAll(double a);///< Function for writing data in text file, used then for plotting/analysis
     void printTestSI(double a);///< Function for print in terminal
-    void printTestB1B2();///< Function for print in terminal
+    void printTesta1a2();///< Function for print in terminal
     void printTestintegralLevin(double a);///< Function for print in terminal
     void printTestFullP(double a);
 

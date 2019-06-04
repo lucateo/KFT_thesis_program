@@ -1,7 +1,7 @@
 #include "../include/powerSpectraTeodori.h"
 
 // Plotting functions
-void Powermine::writeB1B2()
+void Powermine::writea1a2()
 {
     int n = 1000;
     std::ofstream openFile;
@@ -9,8 +9,8 @@ void Powermine::writeB1B2()
     for (int i=0; i< n; i++)
     {
         double q = astro::x_logarithmic (i, n, 0.0001, 1000.0);
-        openFile << std::setw(15) << q << "\t" << std::setw(15) << B_1(q)  << "\t" <<
-            std::setw(15) << B_2(q) << std::endl;
+        openFile << std::setw(15) << q << "\t" << std::setw(15) << a_1(q)  << "\t" <<
+            std::setw(15) << a_2(q) << std::endl;
     }
 	openFile.close();
 }
@@ -70,7 +70,7 @@ void Powermine::writeAll(double a)
         double k = astro::x_logarithmic (i, n, 0.001,1000.0);
 
         openFile << std::setw(15) << k << "\t" << std::setw(15)  << QFactor(a,k) << "\t" <<
-            std::setw(15)  << integrand_SI(a,k) <<  /* "\t" << std::setw(15)  << CurlyP(a,k) << */ std::endl;
+            std::setw(15)  << integrand_SI(a,k) <<  /* "\t" << std::setw(15)  << Integral2DLevin(a,k) << */ std::endl;
     }
 	openFile.close();
 }
@@ -91,7 +91,7 @@ void Powermine::printTestSI(double a)
     }
 }
 
-void Powermine::printTestB1B2()
+void Powermine::printTesta1a2()
 {
     std::cout << std::setw(15) << "q" << "\t" << std::setw(15)  << "B_1" << "\t" <<
             std::setw(15)  << "B_2"<<  std::endl;
@@ -100,8 +100,8 @@ void Powermine::printTestB1B2()
     {
         double q = astro::x_logarithmic (i, n, 0.0001, 1000.0);
 
-        std::cout << std::setw(15) << q << "\t" << std::setw(15)  << B_1(q)  << "\t" <<
-             std::setw(15)  << B_2(q)  << std::endl;
+        std::cout << std::setw(15) << q << "\t" << std::setw(15)  << a_1(q)  << "\t" <<
+             std::setw(15)  << a_2(q)  << std::endl;
     }
 }
 
@@ -113,7 +113,7 @@ void Powermine::printTestintegralLevin(double a)
     {
         double k = astro::x_logarithmic (i, n, 0.0001, 1000.0);
 
-        std::cout << std::setw(15) << k << "\t" << std::setw(15)  << CurlyP(a,k) << std::endl;
+        std::cout << std::setw(15) << k << "\t" << std::setw(15)  << Integral2DLevin(a,k) << std::endl;
     }
 }
 

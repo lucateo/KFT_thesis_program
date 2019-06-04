@@ -55,8 +55,8 @@ double Powermine::QFactor (double a, double k)
     return Q;
 }
 
-// B_1, B_2 are defined in chapter 4
-double Powermine::B_1 (double q)
+// a_1, a_2 are defined in chapter 4
+double Powermine::a_2 (double q)
 {
     // Trying to integrate step by step
     double sum= 0.0;
@@ -70,19 +70,15 @@ double Powermine::B_1 (double q)
 
     for (int i = 0; i < nbins; i++)
     {
-        astro::LC_integrator integrate (integrand, astro::OSC_SPH_BESSEL, 2, bins[i], bins[i+1], 16);
+        astro::LC_integrator integrate (integrand, astro::OSC_SPH_BESSEL, 2,
+                bins[i], bins[i+1], 16);
+
         sum += integrate (q);
     }
     return sum;
-
-    // astro::osc_integrator::Integrand p1 =  p;
-    // astro::osc_integrator Integral	(p1, astro::OSC_SPH_BESSEL,
-    //     2,k_min,k_max, astro::LOG_SPACING, nbins );
-    //
-    // return Integral(q);
 };
 
-double Powermine::B_2 (double q)
+double Powermine::a_1 (double q)
 {
     double sum= 0.0;
     std::vector<double> bins (nbins+1);
@@ -95,30 +91,29 @@ double Powermine::B_2 (double q)
 
     for (int i = 0; i < nbins; i++)
     {
-        astro::LC_integrator integrate (integrand, astro::OSC_SPH_BESSEL, 1, bins[i], bins[i+1], 16);
+        astro::LC_integrator integrate (integrand, astro::OSC_SPH_BESSEL, 1,
+                bins[i], bins[i+1], 16);
+
         sum += integrate (q);
     }
     return sum;
-
-    // astro::osc_integrator::Integrand p1 = p;
-    // astro::osc_integrator Integral	(p1, astro::OSC_SPH_BESSEL,
-    //     1,k_min,k_max, astro::LOG_SPACING, nbins );
-    //
-    // return Integral(q);
 }
 
-// The integral for \mathcal{P} without the prefactor (it is unstable!)
-double Powermine::Integral2DLevin(double k)
+// The integral for \mathcal{P} (it is unstable!)
+double Powermine::Integral2DLevin(double a, double k)
 {
     double sum= 0.0;
     std::vector<double> bins (nbins+1);
     for (int i = 0; i < nbins+1; i++)
         bins[i] = astro::x_logarithmic (i, nbins+1, q_min, q_max);
 
-    // Integrand function (without cosine)
+    double g_qp = propagator->g_qp(a);
+    double C = g_qp *g_qp*k*k;
+
+    // Integrand without cos factor
     std::function<double (double, double, double)>
-    integrand = [this] (double k, double q, double mu)
-    {    return q*q * exp(B_2(q)) *(exp(mu * mu * B_1(q)) - 1);};
+    integrand = [this, C] (double k, double q, double mu)
+    {    return q*q * (exp( -C * (a_1(q) + mu * mu * a_2(q))) - 1);};
 
     for (int i = 0; i < nbins; i++)
     {
@@ -126,15 +121,7 @@ double Powermine::Integral2DLevin(double k)
             (integrand, astro::OSC_COSINE, 0, -1.0, 1.0, bins[i], bins[i+1], 8, 8);
         sum += integrate (k);
     }
-    return sum;
-}
-
-// Simply the \mathcal{P} with the prefactor
-double Powermine::CurlyP(double a, double k)
-{
-    double g_qp = propagator->g_qp(a);
-    double prefact = 2* M_PI *exp(-g_qp *g_qp*k*k);
-    return prefact * Integral2DLevin(k);
+    return 2* M_PI*sum;
 }
 
 // J(y) in the main text
@@ -192,7 +179,7 @@ double Powermine::S_I (double a, double k)
 double Powermine::fullPowerSpectrum (double a, double k)
 {
     double Q_D = QFactor(a,k);
-    double curlyP = CurlyP(a,k);
+    double curlyP = Integral2DLevin(a,k);
     double SI = S_I(a,k);
     return exp(-Q_D + SI) * curlyP;
 }
