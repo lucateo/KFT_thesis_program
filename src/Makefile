@@ -19,7 +19,7 @@ ODIR=obj
 LIBS=-lm -lastrocpp -lgsl -lgslcblas -lKFT
 
 # possible local header file
-DEPS = ../include/powerSpectraTeodori.h
+DEPS = ../include/Bartelmann.h 
 
 # Put local header file in _DEPS and the one in include folder from IDIR, $ symbol is to call the variables
 # you defined; % is for all the files under the IDIR directory;
@@ -29,10 +29,10 @@ DEPS = ../include/powerSpectraTeodori.h
 #DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 # The main cpp source that will be also the name of the program, usually change only this
-MAIN_SOURCE = main
+MAIN_SOURCE = main2
 
 # put here also all the other sources
-SOURCES = $(MAIN_SOURCE).cpp functions.cpp write.cpp 
+SOURCES = $(MAIN_SOURCE).cpp Bartelmann.cpp functionTable.cpp osc_integrator.cpp bardeenPowerSpectrum.cpp smithEtalPowerSpectrum.cpp # functions.cpp write.cpp 
 
 _OBJ = $(patsubst %.cpp,%.o,$(SOURCES))
 # Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj)

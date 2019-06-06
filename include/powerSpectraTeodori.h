@@ -8,7 +8,6 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf.h>
 
-
 #include <astro/utilities/osc_integrator.h>
 #include <astro/cosmology/cosmologyBase.h>
 #include <astro/cosmology/cosmicStructures.h>
@@ -19,6 +18,9 @@
 #include <astro/utilities/LC_2d_integrator.h>
 
 #include <KFT/particleDynamics/newZeldovichParticleDynamics.h>
+#include <KFT/cosmology/kftCosmology.h>
+#include <KFT/cosmology/powerSpectra.h>
+#include <KFT/iniCorr/iniCorrTable.h>
 
 /**
  * \ingroup PowerSpectrumEvolution
