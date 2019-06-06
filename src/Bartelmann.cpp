@@ -7,16 +7,16 @@ testPowerSpectrum::testPowerSpectrum
   {
     cosmic_structures = new astro::cosmicStructures (cosmological_model);
     powerSpectrum::amplitude = sigma_8*sigma_8/sigma2 (8.0);
-  }
+}
 
-  testPowerSpectrum::~testPowerSpectrum ()
-  { delete cosmic_structures; }
+testPowerSpectrum::~testPowerSpectrum ()
+{ delete cosmic_structures; }
 
-  double testPowerSpectrum::operator () (const double k, const double a)
-  {
-    double D_plus = cosmic_structures->Dplus (a);
-    double kappa = k/k0;
-    return D_plus*D_plus*amplitude*k/gsl_pow_2 (1.0+kappa*kappa);
-  }
+double testPowerSpectrum::operator () (const double k, const double a)
+{
+double D_plus = cosmic_structures->Dplus (a);
+double kappa = k/k0;
+return D_plus*D_plus*amplitude*k/gsl_pow_2 (1.0+kappa*kappa);
+}
 
 

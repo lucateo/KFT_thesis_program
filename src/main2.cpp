@@ -23,8 +23,8 @@ int main (int argc, char * argv[])
   double a_initial = 1.0e-3;
   const double k_min = 1.0e-3, k_max = 100.0;
   const double q_min = 1.0e-5, q_max = 1.0e5;
-  std::string ps_table = "ps_table.d";
-  std::string cf_table = "cf_table.d";
+  std::string ps_table = "data/ps_table.d";
+  std::string cf_table = "data/cf_table.d";
   
   /**
    * Initialise cosmological model, power spectrum, and KFT cosmology class
@@ -45,7 +45,7 @@ int main (int argc, char * argv[])
       /**
        * Tabulate input power spectrum to file
        */
-      astro::functionWriter write ("testSpectrum.txt");
+      astro::functionWriter write ("data/testSpectrum.txt");
       write.push_back ([&] (double k) { return power_spectrum (k, 1.0); });
       write (k_min, k_max, n, astro::LOG_SPACING);
       break;
@@ -69,7 +69,7 @@ int main (int argc, char * argv[])
       P.initCorrelation (ps_table, cf_table);
       
       double a_final = 1.0;
-      astro::functionWriter write ("powerSpectra.txt");
+      astro::functionWriter write ("data/powerSpectra.txt");
       write.push_back ([&] (double k) { return P.meanF (k, a_final); });
       write.push_back ([&] (double k) { return P.linearP (k, a_final); });
       write.push_back ([&] (double k) { return P.curlyP (k, a_final); });

@@ -5,6 +5,11 @@
 #include <astro/io/clArguments.h>
 #include <astro/io/functionWriter.h>
 #include <astro/utilities/functionTable.h>
+#include <astro/utilities/osc_integrator.h>
+#include <astro/utilities/integrator.h>
+#include <astro/utilities/utilities.h>
+#include <astro/utilities/LC_integrator.h>
+#include <astro/utilities/LC_2d_integrator.h>
 
 #include <iostream>
 #include <iomanip>
@@ -16,14 +21,8 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf.h>
 
-#include <astro/utilities/osc_integrator.h>
-#include <astro/utilities/integrator.h>
-#include <astro/utilities/utilities.h>
-#include <astro/utilities/LC_integrator.h>
-#include <astro/utilities/LC_2d_integrator.h>
 
 #include <KFT/particleDynamics/newZeldovichParticleDynamics.h>
-
 #include <KFT/cosmology/kftCosmology.h>
 #include <KFT/cosmology/powerSpectra.h>
 #include <KFT/iniCorr/iniCorrTable.h>
