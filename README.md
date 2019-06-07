@@ -7,6 +7,8 @@ It uses the libraries libastro and libKFT, so to use it you should install those
 
 You can easily change all this by checking the Makefile, then you compile by simply typing 'make' ( 'make clean' to remove all .o files). The code is documented with Doxygen comment blocks, so you can extract a Doxygen documentation out of it.
 
-In functions.cpp there are the main functions, whereas in write.cpp there are only simple functions to print the results in terminal or in a text file; this in order to test the main functions in the main.cpp file.
+In this branch, I put different main for the different purposes, most importantly mainCorrelation.cpp computes correlation tables and evolved power spectrum quantities, mainTest is simply to test some functions and verify if they are working properly. To compile with different main, simply change the MAIN_SOURCE variable in the Makefile.
 
-Right now, the program is not working! The integral results are highly unstable, that is they give unreasonable results and they often call the gsl roundoff error. Also, integrals seem to highly depend on number of bins used to perform the integration and on the upper extremum of integration for integrals over an unbound interval.
+I leave here also the most updated version of the thesis in pdf.
+<!-- In functions.cpp there are the main functions, whereas in write.cpp there are only simple functions to print the results in terminal or in a text file; this in order to test the main functions in the main.cpp file. -->
+

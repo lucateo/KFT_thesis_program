@@ -17,12 +17,6 @@ int main (int argc, char * argv[])
   const int type = ca.get ("-t", 0);
   const int n = ca.get ("-n", 128);
   
-  /**
-   * Set internal variables
-   */
-  double a_initial = 1.0e-3;
-  const double k_min = 1.0e-3, k_max = 100.0;
-  const double q_min = 1.0e-5, q_max = 1.0e5;
   std::string ps_table = "data/ps_table.d";
   std::string cf_table = "data/cf_table.d";
   
@@ -32,14 +26,19 @@ int main (int argc, char * argv[])
   astro::cosmologyBase cosmological_model;
   cosmological_model.setDarkUniverse ();
   astro::tophatFilter filter;
+  int initial = 4;
+  double sigma_gauss = 0.001;
+  double k0_gauss = 0.01;
+
   testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
+  power_spectrum.setInitialCondition(4);
   KFT::kftCosmology C (&cosmological_model, &power_spectrum);
   
   /**
    * Choose calculation type
    */
   switch (type)
-  {
+  { 
     case (0):
     {
       /**
@@ -47,7 +46,7 @@ int main (int argc, char * argv[])
        */
       astro::functionWriter write ("data/testSpectrum.txt");
       write.push_back ([&] (double k) { return power_spectrum (k, 1.0); });
-      write (k_min, k_max, n, astro::LOG_SPACING);
+      write (power_spectrum.k_min, power_spectrum.k_max, n, astro::LOG_SPACING);
       break;
     }
     case (1):
@@ -56,7 +55,7 @@ int main (int argc, char * argv[])
        * Calculate and tabulate momentum-correlation functions
        */
       KFT::iniCorrTable corr_table
-        (C.get_power_spectrum (), a_initial, q_min, q_max);
+        (C.get_power_spectrum (), power_spectrum.a_initial, power_spectrum.q_min, power_spectrum.q_max);
       corr_table.print_tables (ps_table, cf_table);
       break;
     }
@@ -81,7 +80,7 @@ int main (int argc, char * argv[])
       write.add_header ("# column 3: linearly evolved power spectrum");
       write.add_header ("# column 4: curly P power spectrum from KFT");
       write.add_header ("# column 5: mean-field non-linear KFT power spectrum");
-      write (k_min, k_max, n, astro::LOG_SPACING);
+      write (power_spectrum.k_min, power_spectrum.k_max, n, astro::LOG_SPACING);
       break;
     }
     default:
