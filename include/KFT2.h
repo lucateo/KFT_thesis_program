@@ -90,7 +90,8 @@ protected:
   void setGaussNorm(double gaussNorm) {m_gaussNorm = gaussNorm;};
   /// Trial function, prints the initial power spectrum
   void trial (double a);
-  
+  /// Trial function, it writes to file the initial power spectrum
+  void writeTest (double a);
   /// write in file correlation tables
   void writeCorrelations(KFT::kftCosmology * C);
   /// write in file the various quantities for the spectra (it needs 

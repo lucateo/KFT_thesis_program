@@ -18,32 +18,56 @@ double D_plus = cosmic_structures->Dplus (a);
 double prefactor = D_plus*D_plus*amplitude;
 double kappa = k/k0;
 switch (m_initial_condition) {
-        // Gaussian case, k here is actually k/gaussian_k0, so
-        // gaussian_k0 sets the unit of measure
-        case 0 : return prefactor * exp(-m_gaussNorm*gsl_pow_2(k -1));
-        // Power case, small integer powers
-        case 4 : return prefactor*k/gsl_pow_2(1 + gsl_pow_2(kappa));
-        case 6 : return prefactor*k/gsl_pow_3(1 + gsl_pow_2(kappa));
-        case 8 : return prefactor*k/gsl_pow_4(1 + gsl_pow_2(kappa));
-        case 10 : return prefactor*k/gsl_pow_5(1 + gsl_pow_2(kappa));
-        // Power case, half integer powers
-        case 3 : return prefactor*k/gsl_pow_3( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-        case 5 : return prefactor*k/gsl_pow_5( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-        case 7 : return prefactor*k/gsl_pow_7( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-        case 9 : return prefactor*k/gsl_pow_9( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-        // non integer powers, i.e. consider number_in/10
-        default : return prefactor*k/(exp((m_initial_condition/10)*log(1 + gsl_pow_2(kappa))));
-    }
+    // Gaussian case, k here is actually k/gaussian_k0, so
+    // gaussian_k0 sets the unit of measure
+    case 0 : {
+                double result = prefactor * exp(-m_gaussNorm*gsl_pow_2(k -1));
+                // if (result < 1e-15)
+                //     return 0;
+                // else
+                    return result;
+             }
+    // Power case, small integer powers
+    case 4 : return prefactor*k/gsl_pow_2(1 + gsl_pow_2(kappa));
+    case 6 : return prefactor*k/gsl_pow_3(1 + gsl_pow_2(kappa));
+    case 8 : return prefactor*k/gsl_pow_4(1 + gsl_pow_2(kappa));
+    case 10 : return prefactor*k/gsl_pow_5(1 + gsl_pow_2(kappa));
+    // Power case, half integer powers
+    case 3 : return prefactor*k/gsl_pow_3( sqrt(1 + gsl_pow_2(kappa) ) ) ;
+    case 5 : return prefactor*k/gsl_pow_5( sqrt(1 + gsl_pow_2(kappa) ) ) ;
+    case 7 : return prefactor*k/gsl_pow_7( sqrt(1 + gsl_pow_2(kappa) ) ) ;
+    case 9 : return prefactor*k/gsl_pow_9( sqrt(1 + gsl_pow_2(kappa) ) ) ;
+    // non integer powers, i.e. consider number_in/10
+    default : return prefactor*k/(exp(double(double(m_initial_condition)/20.0)
+                          *log(1.0 + gsl_pow_2(kappa))));
+             }
 }
 
 // trial function (to see if everything is ok)
 void testPowerSpectrum::trial (double a)
 {
+    double D_plus = cosmic_structures->Dplus (a);
+    double prefactor = D_plus*D_plus*amplitude;
+    std::cout << D_plus << "\t" << amplitude << std::endl;
     for (int i=0; i< n_bins; i++)
     {
         double k = astro::x_logarithmic (i, n_bins, k_min,k_max);
         std::cout << k << "\t" << operator () (k,a) << std::endl;
     }
+}
+
+void testPowerSpectrum::writeTest (double a)
+{
+    std::ofstream openFile;
+    openFile.open("data/Test.txt");
+    for (int i=0; i< n_bins; i++)
+    {
+        double k = astro::x_logarithmic (double(i), double(n_bins), k_min, k_max);
+
+        openFile << std::setw(15) << k << "\t" << std::setw(15)
+            << operator () (k, a) << std::endl;
+    }
+	openFile.close();
 }
 
 // write functions

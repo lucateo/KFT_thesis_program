@@ -30,7 +30,7 @@ DEPS = ../include/KFT2.h
 
 # The main cpp source that will be also the name of the program, usually change only this
 # Be aware of blank spaces!!!!!!!!!!!!!!!
-MAIN_SOURCE = mainCorrelation
+MAIN_SOURCE = mainTest
 
 # put here also all the other sources
 SOURCES = $(MAIN_SOURCE).cpp KFT2.cpp functionTable.cpp osc_integrator.cpp bardeenPowerSpectrum.cpp smithEtalPowerSpectrum.cpp# functions.cpp write.cpp 
