@@ -7,11 +7,10 @@ int main ()
   astro::tophatFilter filter;
   
   int number_initial = 0;
-  double gaussNorm = 10.0;
+  double gaussNorm = 0.1;
   
   testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
-  int a = power_spectrum.a_initial;
-  a=1.0;
+  double a = 0.1;
   
   power_spectrum.setInitialCondition(number_initial);
   power_spectrum.setGaussNorm(gaussNorm);

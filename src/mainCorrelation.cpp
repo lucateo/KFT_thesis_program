@@ -11,66 +11,76 @@ int main ()
     astro::tophatFilter filter;
 
   // Parameters to look at
-  int number_initial = 100;
-  double a = 0.01;
-  int i = 21;
-  double gaussNorm_fixed = 10.0;
+  double a = 3;
+  int i_initial = 3;
+  double gaussNorm_fixed = 0.01;
+  int initial_fixed = 4;
   // Determines the particular program to run
-  int determine_program = 3;
+  // 0 = loop dark matter, 1 = loop gaussian,
+  // 2 = fixed dark matter, 3 = fixed gaussian
+  int determine_program = 0;
 
   // Loop for dark spectrum condition
   if (determine_program == 0)
   {
-    while ( i< number_initial)
+    while ( i_initial < 11)
     {
-        // for (int j=number_a -1; j< number_a; j++)
-        // {
-            testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
-            power_spectrum.setInitialCondition(4);
-            KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-            // double a = astro::x_logarithmic (double(j), double(number_a), 0.01,1.0);
-            power_spectrum.writeAllSpectrum(&C,a);
-            std::cout << "Stop computing, arrived: n = "<<  i<< " a = " << a  << std::endl;
-            usleep(10000000); // sleeps 10 seconds
-            std::cout << "Start computing" << std::endl;
-        // }
-        i=i+2;
+      for (int j= 0; j< 10; j++)
+      {
+        testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
+        power_spectrum.setInitialCondition(i_initial);
+        KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+        double a_loop = astro::x_logarithmic (double(j), 10.0, 3.0,5.0);
+        power_spectrum.writeAllSpectrum(&C,a_loop);
+        
+        std::cout << "Stop computing, arrived: n = "<<  i_initial<< " a = " 
+          << a_loop  << std::endl;
+        
+        usleep(10000000); // sleeps 10 seconds
+        std::cout << "Start computing" << std::endl;
+      }
+      i_initial=i_initial+1;
     }
   }
   // Loop for gaussian initial condition
   if (determine_program == 1)
   {
-    for (int i=0; i< 30; i++)
+    for (int i=1; i< 10; i++)
+      {
+        for (int j = 0; j< 9; j++)
         {
-            testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
-            power_spectrum.setInitialCondition(0);
-            double gaussNorm = astro::x_logarithmic (double(i), 20.0, 10.0,1000.0);
-            power_spectrum.setGaussNorm(gaussNorm);
-            KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-            power_spectrum.writeAllGaussian(&C,a);
-            std::cout << "Stop computing, arrived: normalization = "<< gaussNorm << " a = " << a  << std::endl;
-            usleep(10000000); // sleeps 10 seconds
-            std::cout << "Start computing" << std::endl;
+          double a = astro::x_logarithmic (double(j), 10.0, 0.005,0.1);
+          testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
+          power_spectrum.setInitialCondition(0);
+          double gaussNorm = astro::x_logarithmic (double(i), 10.0, 0.001,2.0);
+          power_spectrum.setGaussNorm(gaussNorm);
+          KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+          power_spectrum.writeAllGaussian(&C,a);
+          std::cout << "Stop computing, arrived: normalization = "<< gaussNorm 
+            << " a = " << a  << std::endl;
+          usleep(10000000); // sleeps 10 seconds
+          std::cout << "Start computing" << std::endl;
         }
+      }
   }
 
   // Dark spectrum for fixed condition  
   if (determine_program == 2)
   {
-        testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
-        power_spectrum.setInitialCondition(4);
-        KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-        power_spectrum.writeAllSpectrum(&C,a);
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
+    power_spectrum.setInitialCondition(initial_fixed);
+    KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+    power_spectrum.writeAllSpectrum(&C,a);
   }
 
   // Gaussian initial for fixed condition 
   if (determine_program == 3)
   {
-        testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
-        power_spectrum.setInitialCondition(0);
-        power_spectrum.setGaussNorm(gaussNorm_fixed);
-        KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-        power_spectrum.writeAllGaussian(&C,a);
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter);
+    power_spectrum.setInitialCondition(0);
+    power_spectrum.setGaussNorm(gaussNorm_fixed);
+    KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+    power_spectrum.writeAllGaussian(&C,a);
   }
     return 0;
 }

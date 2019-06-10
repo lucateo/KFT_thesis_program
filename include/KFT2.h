@@ -40,12 +40,12 @@
  */
 class testPowerSpectrum: public astro::powerSpectrum
 {
-protected:
+  protected:
   /// Radiation-matter equality scale  
   const double k0 = 0.025;
   astro::cosmicStructures * cosmic_structures;
   
- public:
+  public:
   /** 
    * The constructor of the class, it initialize the power spectrum with the
    * cosmological model
