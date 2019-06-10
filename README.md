@@ -7,8 +7,7 @@ It uses the libraries libastro and libKFT, so to use it you should install those
 
 You can easily change all this by checking the Makefile, then you compile by simply typing 'make' ( 'make clean' to remove all .o files). The code is documented with Doxygen comment blocks, so you can extract a Doxygen documentation out of it.
 
-In this branch, I put different main for the different purposes, most importantly mainCorrelation.cpp computes correlation tables and evolved power spectrum quantities, mainTest is simply to test some functions and verify if they are working properly. To compile with different main, simply change the MAIN_SOURCE variable in the Makefile.
+In this branch, I put the old (not working) program I tried to do. To compile with different main, simply change the MAIN_SOURCE variable in the Makefile.
 
-I leave here also the most updated version of the thesis in pdf.
-<!-- In functions.cpp there are the main functions, whereas in write.cpp there are only simple functions to print the results in terminal or in a text file; this in order to test the main functions in the main.cpp file. -->
+In functions.cpp there are the main functions, whereas in write.cpp there are only simple functions to print the results in terminal or in a text file; this in order to test the main functions in the main.cpp file.
 
