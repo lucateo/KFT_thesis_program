@@ -1,10 +1,14 @@
 #include "../include/KFT2.h"
 
 testPowerSpectrum::testPowerSpectrum(astro::cosmologyBase * cosmological_model_in,
-  const double sigma8_in, astro::scaleFilter * filter_in):
+  const double sigma8_in, astro::scaleFilter * filter_in, int initial_condition,
+  double k0_gauss, double sigma_gauss):
   // The last one is exponent of large scale
   powerSpectrum (cosmological_model_in, sigma8_in, filter_in, 1.0)
   {
+    m_initial_condition = initial_condition;
+    m_gauss_k0 = k0_gauss;
+    m_sigma_gauss = sigma_gauss;
     cosmic_structures = new astro::cosmicStructures (cosmological_model);
     powerSpectrum::amplitude = sigma_8*sigma_8/sigma2 (8.0);
   }
@@ -17,37 +21,79 @@ double testPowerSpectrum::operator () (const double k, const double a)
   double D_plus = cosmic_structures->Dplus (a);
   double prefactor = D_plus*D_plus*amplitude;
   double kappa = k/k0;
-  switch (m_initial_condition) {
-    // Gaussian case, k here is actually k/gaussian_k0, so
-    // gaussian_k0 sets the unit of measure
-    case 0 : {
-      double result = prefactor * exp(-m_gaussNorm*gsl_pow_2(k -1));
-      // if (result < 1e-15)
-      //     return 0;
-      // else
-          return result;
-    }
-    // Power case, small integer powers
-    case 4 : return prefactor*k/gsl_pow_2(1 + gsl_pow_2(kappa));
-    case 6 : return prefactor*k/gsl_pow_3(1 + gsl_pow_2(kappa));
-    case 8 : return prefactor*k/gsl_pow_4(1 + gsl_pow_2(kappa));
-    case 10 : return prefactor*k/gsl_pow_5(1 + gsl_pow_2(kappa));
-    // Power case, half integer powers
-    case 3 : return prefactor*k/gsl_pow_3( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-    case 5 : return prefactor*k/gsl_pow_5( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-    case 7 : return prefactor*k/gsl_pow_7( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-    case 9 : return prefactor*k/gsl_pow_9( sqrt(1 + gsl_pow_2(kappa) ) ) ;
-    // non integer powers, i.e. consider number_in/10
-    default : return prefactor*k/(exp(double(double(m_initial_condition)/20.0)
-                *log(1.0 + gsl_pow_2(kappa))));
-    }
+  // Gaussian case
+  if (m_initial_condition == 0 )
+    return prefactor * exp(-gsl_pow_2(k -m_gauss_k0)/(2*m_sigma_gauss));
+  // even n case
+  else if (m_initial_condition == 4 )
+    return prefactor*k/gsl_pow_2(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 6 )
+    return prefactor*k/gsl_pow_3(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 8 )
+    return prefactor*k/gsl_pow_4(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 10 )
+    return prefactor*k/gsl_pow_5(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 12 )
+    return prefactor*k/gsl_pow_6(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 14 )
+    return prefactor*k/gsl_pow_7(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 16 )
+    return prefactor*k/gsl_pow_8(1.0 + gsl_pow_2(kappa));
+  else if (m_initial_condition == 18 )
+    return prefactor*k/gsl_pow_9(1.0 + gsl_pow_2(kappa));
+  // odd n case
+  else if (m_initial_condition == 3 )
+    return prefactor*k/gsl_pow_3(sqrt(1.0 + gsl_pow_2(kappa)));
+  else if (m_initial_condition == 5 )
+    return prefactor*k/gsl_pow_5(sqrt(1.0 + gsl_pow_2(kappa)));
+  else if (m_initial_condition == 7 )
+    return prefactor*k/gsl_pow_7(sqrt(1.0 + gsl_pow_2(kappa)));
+  else if (m_initial_condition == 9 )
+    return prefactor*k/gsl_pow_9(sqrt(1.0 + gsl_pow_2(kappa)));
+  else if (m_initial_condition == 11 )
+    return prefactor*k/gsl_pow_int(sqrt(1.0 + gsl_pow_2(kappa)), 11);
+  else if (m_initial_condition == 13 )
+    return prefactor*k/gsl_pow_int(sqrt(1.0 + gsl_pow_2(kappa)), 13);
+  else if (m_initial_condition == 15 )
+    return prefactor*k/gsl_pow_int(sqrt(1.0 + gsl_pow_2(kappa)), 15);
+  else if (m_initial_condition == 17 )
+    return prefactor*k/gsl_pow_int(sqrt(1.0 + gsl_pow_2(kappa)), 17);
+  else if (m_initial_condition == 19 )
+    return prefactor*k/gsl_pow_int(sqrt(1.0 + gsl_pow_2(kappa)), 19);
+  // other cases
+  else
+    return prefactor*k/(exp(double(double(m_initial_condition)/2.0)
+             *log(1.0 + gsl_pow_2(kappa))));
+  // switch (m_initial_condition) {
+  //   // Gaussian case, k here is actually k/gaussian_k0, so
+  //   // gaussian_k0 sets the unit of measure
+  //   case 0 : {
+  //     double result = prefactor * exp(-m_gaussNorm*gsl_pow_2(k -1.0));
+  //     // if (result < 1e-15)
+  //     //     return 0;
+  //     // else
+  //         return result;
+  //   }
+  //   // Power case, small integer powers
+  //   case 4 : return prefactor*k/gsl_pow_2(1.0 + gsl_pow_2(kappa));
+  //   case 6 : return prefactor*k/gsl_pow_3(1.0 + gsl_pow_2(kappa));
+  //   case 8 : return prefactor*k/gsl_pow_4(1.0 + gsl_pow_2(kappa));
+  //   case 10 : return prefactor*k/gsl_pow_5(1.0 + gsl_pow_2(kappa));
+  //   // Power case, half integer powers
+  //   case 3 : return prefactor*k/gsl_pow_3( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
+  //   case 5 : return prefactor*k/gsl_pow_5( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
+  //   case 7 : return prefactor*k/gsl_pow_7( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
+  //   case 9 : return prefactor*k/gsl_pow_9( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
+  //   // non integer powers, i.e. consider number_in/10
+  //   default : return prefactor*k/(exp(double(double(m_initial_condition)/20.0)
+  //               *log(1.0 + gsl_pow_2(kappa))));
+  //   }
 }
 
 // trial function (to see if everything is ok)
 void testPowerSpectrum::trial (double a)
 {
   double D_plus = cosmic_structures->Dplus (a);
-  double prefactor = D_plus*D_plus*amplitude;
   std::cout << D_plus << "\t" << amplitude << std::endl;
   for (int i=0; i< n_bins; i++)
   {
@@ -74,8 +120,8 @@ void testPowerSpectrum::writeTest (double a)
 void testPowerSpectrum::writeCorrelations (KFT::kftCosmology * C )
 {
   std::ostringstream os_ps, os_cf;
-  os_ps << "data/ps_table_a_" << 1.0 << "_n_initial_"<< m_initial_condition << ".txt";
-  os_cf << "data/cf_table_a_"<< 1.0 << "_n_initial_"<< m_initial_condition << ".txt";
+  os_ps << "data/ps_table_a_" << 1.0 << "_n_initial_"<< m_initial_condition << ".d";
+  os_cf << "data/cf_table_a_"<< 1.0 << "_n_initial_"<< m_initial_condition << ".d";
 
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
@@ -86,11 +132,11 @@ void testPowerSpectrum::writeCorrelations (KFT::kftCosmology * C )
   corr_table.print_tables (ps_table, cf_table);
 }
 
-void testPowerSpectrum::testPowerSpectrum::writeSpectrum (KFT::kftCosmology * C, double a)
+void testPowerSpectrum::writeSpectrum (KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table_a_" << a << "_n_initial_"<< m_initial_condition << ".txt";
-  os_cf << "data/cf_table_a_"<< a << "_n_initial_"<< m_initial_condition << ".txt";
+  os_ps << "data/ps_table_a_" << a << "_n_initial_"<< m_initial_condition << ".d";
+  os_cf << "data/cf_table_a_"<< a << "_n_initial_"<< m_initial_condition << ".d";
   os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition << ".txt";
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
@@ -117,8 +163,8 @@ void testPowerSpectrum::testPowerSpectrum::writeSpectrum (KFT::kftCosmology * C,
 void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table_a_" << a << "_n_initial_"<< m_initial_condition << ".txt";
-  os_cf << "data/cf_table_a_"<< a << "_n_initial_"<< m_initial_condition << ".txt";
+  os_ps << "data/ps_table_a_" << a << "_n_initial_"<< m_initial_condition << ".d";
+  os_cf << "data/cf_table_a_"<< a << "_n_initial_"<< m_initial_condition << ".d";
   os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition << ".txt";
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
@@ -132,7 +178,7 @@ void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
   KFT::powerSpectra P (C);
   P.initCorrelation (ps_table, cf_table);
 
-  astro::functionWriter write (power_file );
+  astro::functionWriter write (power_file);
   write.push_back ([&] (double k) { return P.meanF (k, a); });
   write.push_back ([&] (double k) { return P.linearP (k, a); });
   write.push_back ([&] (double k) { return P.curlyP (k, a); });
@@ -151,9 +197,14 @@ void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
 void testPowerSpectrum::writeAllGaussian(KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table_a_" << a << "_normGauss_"<< m_gaussNorm << ".txt";
-  os_cf << "data/cf_table_a_"<< a << "_normGauss_"<< m_gaussNorm << ".txt";
-  os << "data/GaussSpectra_a_" << a << "_normGauss_"<< m_gaussNorm << ".txt";
+  os_ps << "data/ps_table_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
+    << m_sigma_gauss << ".d";
+
+  os_cf << "data/cf_table_a_"<< a << "_k0_"<< m_gauss_k0 << "_sigma_"
+    << m_sigma_gauss << ".d";
+
+  os << "data/GaussSpectra_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
+    << m_sigma_gauss << ".txt";
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
   std::string power_file = os.str();

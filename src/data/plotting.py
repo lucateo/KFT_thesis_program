@@ -11,7 +11,7 @@ plt.rc('text.latex', preamble=r'\usepackage{amsmath}\usepackage{mathpazo}')
 filename = sys.argv[1]
 
 # dark matter case, this reads the first two letters
-if filename[0:2] == "po":
+if filename[0:2] == "po" or filename[0:4]=="luca":
     #Loading data
     data = np.loadtxt(filename, skiprows = 8)
     k, meanField, linPower, curlyP, BornApprox = data.T  # trick: columns to variables
@@ -35,16 +35,16 @@ if filename[0:2] == "po":
     plt.yscale('log')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     # I want to determine the slope on large scales
-    lin_k = np.log(k[50:-1])
-    linBornApprox =  BornApprox[50:-1]
+    lin_k = np.log(k[100:-1]) # with this you start with k = 10
+    linBornApprox =  BornApprox[100:-1]
     # I remove the values that corresponds to too low values (giving error when
     # you do the log
-    for x in linBornApprox:
-        if x < 1e-7: # Change it to remove the probably garbage data at the end of the curve
-            index = np.where(linBornApprox == x)
-            index = index[0][0]
-            linBornApprox = np.delete(linBornApprox, index)
-            lin_k = np.delete(lin_k, index)
+    #  for x in linBornApprox:
+    #      if x < 1e-7: # Change it to remove the probably garbage data at the end of the curve
+    #          index = np.where(linBornApprox == x)
+    #          index = index[0][0]
+    #          linBornApprox = np.delete(linBornApprox, index)
+    #          lin_k = np.delete(lin_k, index)
     linBornApprox = np.log(linBornApprox)
     slope = stats.linregress(lin_k,linBornApprox) # it returns an array with various values, 0 is the slope
     print(slope[0])
@@ -142,14 +142,14 @@ if filename[0:2] == "Ga":
     plt.show()
 
 
-if filename[0:4] == "Test":
+if filename[0:4] == "Test" or filename[0:4]=="test":
     #Loading data
     data = np.loadtxt(filename)
     k, P = data.T  # trick: columns to variables
 
     # I want to determine the slope on large scales
-    lin_k = np.log(k[50:-1])
-    linP =  np.log(P[50:-1])
+    lin_k = np.log(k[100:-1])
+    linP =  np.log(P[100:-1])
     # I remove the values that corresponds to too low values (giving error when
     # you do the log
     slope = stats.linregress(lin_k,linP) # it returns an array with various values, 0 is the slope
@@ -162,7 +162,20 @@ if filename[0:4] == "Test":
     plt.title("slope = %f " %slope[0])
     plt.show()
 
-
+# Try with mainTest of libKFT
+if filename[0:4] == "Bart":
+    #Loading data
+    data = np.loadtxt(filename, skiprows = 8)
+    k, meanField, linPower, curlyP, BornApprox = data.T  # trick: columns to variables
+    #Plotting
+    plt.figure(1)
+    plt.plot(k, linPower, k, curlyP, k, BornApprox)
+    plt.legend((r'$ P_\delta^\mathrm{lin} $',r'$ \mathcal{P} $', r'$ \bar{\mathcal{P}} $'), loc='lower left')
+    plt.xlabel(r'$k$ ')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.ylabel(r'$\bar{\mathcal{P}} $')
+    plt.show()
 
 #curlyP plotting
 if filename[0:7] == "curlyP.":

@@ -55,15 +55,16 @@ class testPowerSpectrum: public astro::powerSpectrum
    */
   testPowerSpectrum
     (astro::cosmologyBase * cosmological_model_in, const double sigma8_in,
-     astro::scaleFilter * filter_in );
+     astro::scaleFilter * filter_in, int initial_condition, double k0_gauss,
+     double sigma_gauss);
 
   ~testPowerSpectrum ();
 
   // variables
-  int m_initial_condition = 0; ///< determines the initial condition to use
-  double m_sigma_gauss = 0.001; ///< determines sigma for gauss initial condition
-  double m_gauss_k0 = 0.001; ///< determines  \f$ k_0 \f$ for gauss initial condition
-  double m_gaussNorm = 1; ///< determines \f$ k_0^2/(2 \sigma^2) \f$ factor in gaussian initial condition
+  int m_initial_condition = 4; ///< determines the initial condition to use
+  double m_sigma_gauss = 1; ///< determines sigma for gauss initial condition
+  double m_gauss_k0 = 0.01; ///< determines  \f$ k_0 \f$ for gauss initial condition
+  double m_gaussNorm; ///< determines \f$ k_0^2/(2 \sigma^2) \f$ factor in gaussian initial condition
   double a_initial = 1.0e-3; ///< deterines the initial time
   const double k_min = 1.0e-3, k_max = 100.0;
   const double q_min = 1.0e-5, q_max = 1.0e5;
