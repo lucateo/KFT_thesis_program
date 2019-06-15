@@ -6,9 +6,9 @@ int main ()
   cosmological_model.setDarkUniverse ();
   astro::tophatFilter filter;
   
-  int number_initial = 9;
-  double k0_gauss = 0.1;
-  double sigma_gauss = 1.0;
+  int number_initial = 0;
+  double k0_gauss = 0.01;
+  double sigma_gauss = 0.1;
   
   testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
     number_initial, k0_gauss, sigma_gauss);

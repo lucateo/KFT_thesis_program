@@ -35,8 +35,8 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     plt.yscale('log')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     # I want to determine the slope on large scales
-    lin_k = np.log(k[100:-1]) # with this you start with k = 10
-    linBornApprox =  BornApprox[100:-1]
+    lin_k = np.log(k[100:118]) # with this you start with k = 10
+    linBornApprox =  BornApprox[100:118]
     # I remove the values that corresponds to too low values (giving error when
     # you do the log
     #  for x in linBornApprox:
@@ -47,8 +47,10 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     #          lin_k = np.delete(lin_k, index)
     linBornApprox = np.log(linBornApprox)
     slope = stats.linregress(lin_k,linBornApprox) # it returns an array with various values, 0 is the slope
-    print(slope[0])
-    plt.title("Born approx case, slope = %f " %slope[0])
+    linCurlyP = np.log(curlyP[100:118])
+    slopeCurly =  stats.linregress(lin_k,linCurlyP)
+
+    #  plt.title("Born approx case, slope = %f " %slope[0])
     #  plt.legend((r'$ D^2_+ P_\delta $','$ \mathcal{P} $','$ \overline{\mathcal{P}}  $'), loc='upper left')
 
     plt.figure(3)
@@ -61,22 +63,34 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
 
 
     plt.figure(4)
-    plt.plot(k, linPower, k, curlyP)
-    plt.title(r'Linear Power and $\mathcal{P}$')
+    plt.plot(k, BornApprox, k, curlyP)
+    maxBorn = np.max(BornApprox)
+    indexMax = np.where(BornApprox == maxBorn)
+    indexMax = indexMax[0][0]
+    kMax = k[indexMax]
+    n = filename[27:29]
+    if n[1] == '.':
+        n = np.delete[n,1]
+    print(n)
+    n = int(n)
+
+    print('Born peak = %f' %kMax)
+    plt.title(r'Dark matter power spectrum, $ n $ = %i' %n)
     plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'$ P_\delta^\mathrm{lin} $',r'$ \mathcal{P} $'), loc='lower left')
+    plt.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
-
+    print("Slope Born = %f , error = %f"%(slope[0],slope[4] ))
+    print("Slope curlyP = %f, error = %f" %(slopeCurly[0],slopeCurly[4] ) )
 
     plt.figure(5)
     plt.plot(k, linPower, k, curlyP, k, BornApprox)
-    plt.title(r'$\mathcal{P} $, linear and Born spectrum')
+    plt.title(r'Dark matter power spectrum, $ n $ = %i' %n)
     plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'$ P_\delta^\mathrm{lin} $',r'$ \mathcal{P} $', r'$ \bar{\mathcal{P}} $'), loc='lower left')
+    plt.legend((r'Linearly evolved $ P_\delta^\mathrm{lin} $',r'Free non-linearly evolved $  \mathcal{P} $', r'Born approximated $ \bar{\mathcal{P}} $'), loc='lower left')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
 
     plt.show()
@@ -109,16 +123,16 @@ if filename[0:2] == "Ga":
     plt.plot(k, (BornApprox / linPower) -1)
     plt.xlabel('$k/k_0$ ')
     plt.xscale('log')
-    #  plt.yscale('log')
+    plt.yscale('log')
     plt.ylabel(r'$\bar{\mathcal{P}}/D^2_+ P_\delta  -1$ ')
 
     plt.figure(4)
-    plt.plot(k, linPower, k, curlyP)
-    plt.title(r'Linear Power and $\mathcal{P}$')
+    plt.plot(k, BornApprox, k, curlyP)
+    plt.title(r'Born and $\mathcal{P}$')
     plt.xlabel('$k/k_0\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'$ P_\delta^\mathrm{lin} $',r'$ \mathcal{P} $'), loc='lower left')
+    plt.legend((r'$ \bar{\mathcal{P}} $',r'$ \mathcal{P} $'), loc='lower left')
     plt.ylabel('Power spectra $[k_0]$')
 
 
@@ -135,7 +149,7 @@ if filename[0:2] == "Ga":
     plt.plot(k, curlyP)
     plt.xlabel('$k/k_0$ ')
     plt.xscale('log')
-    #  plt.yscale('log')
+    plt.yscale('log')
     plt.title(r'$\mathcal{P}$')
     plt.ylabel(r'$\mathcal{P}$')
 

@@ -13,18 +13,19 @@ int main ()
   // Parameters to look at
   double a = 1.0;
   // Initial condition for the loop
-  int i_initial = 3;
-  double k0_fixed = 0.01;
-  double sigma_fixed = 0.1;
+  int i_initial = 15;
+  double k0_fixed = 10.0;
+  double sigma_fixed = 0.01;
   int initial_fixed = 18;
   // Determines the particular program to run
   // 0 = loop dark matter, 1 = loop gaussian,
-  // 2 = fixed dark matter, 3 = fixed gaussian
-  int determine_program = 0;
+  // 2 = fixed dark matter, 3 = fixed gaussian, 4 = gaussian loop sigma only
+  // 5 = gaussian loop sigma and a only
+  int determine_program = 2;
   
   if (determine_program == 0)
   {
-    while ( i_initial < 20)
+    while ( i_initial < 23)
     {
       for (int j= 0; j< 5; j++)
       {
@@ -59,9 +60,9 @@ int main ()
             testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 0,
               k0_loop, sigma_loop);
             KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-            power_spectrum.writeAllGaussian(&C,a);
+            power_spectrum.writeAllGaussian(&C,a_loop);
             std::cout << "Stop computing, arrived: k0= "<< k0_loop << " sigma "
-              << sigma_loop << " a = " << a  << std::endl;
+              << sigma_loop << " a = " << a_loop  << std::endl;
             usleep(10000000); // sleeps 10 seconds
             std::cout << "Start computing" << std::endl;
           }
@@ -86,5 +87,43 @@ int main ()
     KFT::kftCosmology C (&cosmological_model, &power_spectrum);
     power_spectrum.writeAllGaussian(&C,a);
   }
+
+  if (determine_program == 4)
+  {
+    for (int i = 0; i<10; i++)
+    {
+      double sigma_loop = astro::x_logarithmic (double(i), 10.0, 0.1,10.0);
+      testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 0,
+        k0_fixed, sigma_loop);
+      KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+      power_spectrum.writeAllGaussian(&C,a);
+      std::cout << "Stop computing, arrived: k0= "<< k0_fixed << " sigma "
+        << sigma_loop << " a = " << a  << std::endl;
+      usleep(10000000); // sleeps 10 seconds
+      std::cout << "Start computing" << std::endl;
+    }
+  }
+  
+  if (determine_program == 5)
+  {
+    for (int i = 0; i<8; i++)
+    {
+      for (int j=0; j< 5; j++)
+      {
+        double sigma_loop = astro::x_logarithmic (double(i), 8.0, 5.0,10.0);
+        double a_loop = astro::x_logarithmic (double(j), 5.0, 0.01,1.0);
+        testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 0,
+          k0_fixed, sigma_loop);
+        KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+        power_spectrum.writeAllGaussian(&C,a_loop);
+        std::cout << "Stop computing, arrived: k0= "<< k0_fixed << " sigma "
+          << sigma_loop << " a = " << a_loop  << std::endl;
+        usleep(10000000); // sleeps 10 seconds
+        std::cout << "Start computing" << std::endl;
+      }
+    }
+  }
+
     return 0;
 }
+

@@ -120,8 +120,10 @@ void testPowerSpectrum::writeTest (double a)
 void testPowerSpectrum::writeCorrelations (KFT::kftCosmology * C )
 {
   std::ostringstream os_ps, os_cf;
-  os_ps << "data/ps_table_a_" << 1.0 << "_n_initial_"<< m_initial_condition << ".d";
-  os_cf << "data/cf_table_a_"<< 1.0 << "_n_initial_"<< m_initial_condition << ".d";
+  os_ps << "data/ps_table/ps_table_a_" << 1.0 << "_n_initial_"
+    << m_initial_condition << ".d";
+  os_cf << "data/cf_table/cf_table_a_"<< 1.0 << "_n_initial_"
+    << m_initial_condition << ".d";
 
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
@@ -135,9 +137,15 @@ void testPowerSpectrum::writeCorrelations (KFT::kftCosmology * C )
 void testPowerSpectrum::writeSpectrum (KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table_a_" << a << "_n_initial_"<< m_initial_condition << ".d";
-  os_cf << "data/cf_table_a_"<< a << "_n_initial_"<< m_initial_condition << ".d";
-  os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition << ".txt";
+  os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
+    << m_initial_condition << ".d";
+
+  os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
+    << m_initial_condition << ".d";
+
+  os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition
+    << ".txt";
+
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
   std::string power_file = os.str();
@@ -163,9 +171,15 @@ void testPowerSpectrum::writeSpectrum (KFT::kftCosmology * C, double a)
 void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table_a_" << a << "_n_initial_"<< m_initial_condition << ".d";
-  os_cf << "data/cf_table_a_"<< a << "_n_initial_"<< m_initial_condition << ".d";
-  os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition << ".txt";
+  os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
+    << m_initial_condition << ".d";
+
+  os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
+    << m_initial_condition << ".d";
+
+  os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition
+    << ".txt";
+
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
   std::string power_file = os.str();
@@ -197,10 +211,10 @@ void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
 void testPowerSpectrum::writeAllGaussian(KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
+  os_ps << "data/ps_table/ps_table_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
     << m_sigma_gauss << ".d";
 
-  os_cf << "data/cf_table_a_"<< a << "_k0_"<< m_gauss_k0 << "_sigma_"
+  os_cf << "data/cf_table/cf_table_a_"<< a << "_k0_"<< m_gauss_k0 << "_sigma_"
     << m_sigma_gauss << ".d";
 
   os << "data/GaussSpectra_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
@@ -229,7 +243,7 @@ void testPowerSpectrum::writeAllGaussian(KFT::kftCosmology * C, double a)
   write.add_header ("# column 3: linearly evolved power spectrum");
   write.add_header ("# column 4: curly P power spectrum from KFT");
   write.add_header ("# column 5: mean-field non-linear KFT power spectrum");
-  write (1.0e-2, 4.0e3, n_bins, astro::LOG_SPACING);
+  write (k_min, k_max, n_bins, astro::LOG_SPACING);
 }
 
 
