@@ -3,10 +3,12 @@ import matplotlib.pyplot as plt
 import sys
 from scipy import stats
 
+# For latex stuff
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}\usepackage{mathpazo}')
         #  \usepackage{foo-name} `...')
 #matplotlib.verbose.level = 'debug-annoying'
+
 # The name of the text file you want to plot
 filename = sys.argv[1]
 
@@ -16,27 +18,31 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     data = np.loadtxt(filename, skiprows = 8)
     k, meanField, linPower, curlyP, BornApprox = data.T  # trick: columns to variables
     #Plotting
-    plt.figure(1)
-    plt.plot(k, meanField)#, k, linPower, k, curlyP, k, BornApprox)
-    #  plt.legend(('$S_\mathrm{I}$', '$ D^2_+ P_\delta [h^{-3}\,\mathrm{Mpc}^3 ] $','$ \mathcal{P} [h^{-3}\,\mathrm{Mpc}^3 ] $','$ \bar{\mathcal{P}} [h^{-3}\,\mathrm{Mpc}^3 ] $'), loc='upper left')
-   # plt.plot(k, BornApprox)
-    plt.xlabel('$k \,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.ylabel('$S_\mathrm{I} $')
+    fig = plt.figure(1, figsize=(10,5))
+    ax1 = fig.add_subplot(121) #subplot(nrows, ncols, index)
+    ax2 = fig.add_subplot(122) #subplot(nrows, ncols, index)
+    ax1.plot(k, BornApprox, k, curlyP)
+    ax2.plot(k, meanField)#, k, linPower, k, curlyP, k, BornApprox)
+    ax1.set_xlabel('$ k \,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+    ax2.set_xscale('log')
+    ax2.set_yscale('log')
+    ax1.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
+    ax1.set_title(r'$ \mathcal{P} $ and $ \bar{\mathcal{P}} $')
+    ax2.set_title('$ S_\mathrm{I} $')
     n = 4 # Change this to put the proper index in the title
-    plt.title(f'Mean interacting action, initial condition index $n = {n} $ ')
+    #  plt.title(f'Mean interacting action, initial condition index $n = {n} $ ')
 
     plt.figure(2)
     plt.plot(k, BornApprox)
-    #  plt.plot( k, linPower, k, curlyP, k, BornApprox)
     plt.xlabel('$k \,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     # I want to determine the slope on large scales
-    lin_k = np.log(k[100:118]) # with this you start with k = 10
-    linBornApprox =  BornApprox[100:118]
+    lin_k = np.log(k[100:113]) # with this you start with k = 10
+    linBornApprox =  BornApprox[100:113]
     # I remove the values that corresponds to too low values (giving error when
     # you do the log
     #  for x in linBornApprox:
@@ -47,11 +53,8 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     #          lin_k = np.delete(lin_k, index)
     linBornApprox = np.log(linBornApprox)
     slope = stats.linregress(lin_k,linBornApprox) # it returns an array with various values, 0 is the slope
-    linCurlyP = np.log(curlyP[100:118])
+    linCurlyP = np.log(curlyP[100:113])
     slopeCurly =  stats.linregress(lin_k,linCurlyP)
-
-    #  plt.title("Born approx case, slope = %f " %slope[0])
-    #  plt.legend((r'$ D^2_+ P_\delta $','$ \mathcal{P} $','$ \overline{\mathcal{P}}  $'), loc='upper left')
 
     plt.figure(3)
     plt.plot(k, (BornApprox / linPower) -1)
@@ -61,21 +64,34 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     plt.title('Comparison linear vs Born')
     plt.ylabel(r'$ \bar{\mathcal{P}}/P_\delta^\mathrm{lin}  -1  $')
 
-
     plt.figure(4)
     plt.plot(k, BornApprox, k, curlyP)
     maxBorn = np.max(BornApprox)
     indexMax = np.where(BornApprox == maxBorn)
     indexMax = indexMax[0][0]
     kMax = k[indexMax]
-    n = filename[27:29]
-    if n[1] == '.':
-        n = np.delete[n,1]
+
+    get_indexes = lambda filename, x: [i for (y, i) in zip(x, range(len(x))) if filename == y]
+    array_index_ = get_indexes("_",filename)
+    point_index = get_indexes(".",filename)
+    n = filename[(array_index_[4]+1):point_index[-1] ]
+    if len(n) == 1:
+        n=int(n)
+        determine = False
+    elif n[1]=='.':
+        n = float(n)
+        determine = True # determines if n is float or int
+    elif n[1] =='k':
+        n= n[0:1]
+        n = int(n)
+        determine = False
+    else:
+        n=int(n)
+        determine = False
     print(n)
-    n = int(n)
 
     print('Born peak = %f' %kMax)
-    plt.title(r'Dark matter power spectrum, $ n $ = %i' %n)
+    plt.title(r'Dark matter power spectrum, $ n $ = %s' %n)
     plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
@@ -86,13 +102,16 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
 
     plt.figure(5)
     plt.plot(k, linPower, k, curlyP, k, BornApprox)
-    plt.title(r'Dark matter power spectrum, $ n $ = %i' %n)
+    plt.title(r'Dark matter power spectrum, $ n $ = %s' %n)
     plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
     plt.legend((r'Linearly evolved $ P_\delta^\mathrm{lin} $',r'Free non-linearly evolved $  \mathcal{P} $', r'Born approximated $ \bar{\mathcal{P}} $'), loc='lower left')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
-
+    if determine == True:
+        print("%.1f & %f $ \pm $ %f & %f $ \pm $ %f & %f \\\\ " %(n,slope[0],slope[4], slopeCurly[0],slopeCurly[4], kMax))
+    else:
+        print("%i & %f $ \pm $ %f & %f $ \pm $ %f & %f \\\\ " %(n,slope[0],slope[4], slopeCurly[0],slopeCurly[4], kMax))
     plt.show()
 
 # Gaussian case
@@ -101,57 +120,83 @@ if filename[0:2] == "Ga":
     data = np.loadtxt(filename, skiprows = 8)
     k, meanField, linPower, curlyP, BornApprox = data.T  # trick: columns to variables
     #Plotting
-    plt.figure(1)
-    plt.plot(k, meanField)
-    plt.xlabel(r'$k /k_0$ ')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.ylabel('$S_\mathrm{I} $')
-    norm = 4
-    plt.title(fr'Mean interacting action, normalization factor = {norm} ')
+    fig = plt.figure(1, figsize=(10,5))
+    ax1 = fig.add_subplot(121) #subplot(nrows, ncols, index)
+    ax2 = fig.add_subplot(122) #subplot(nrows, ncols, index)
+    ax1.plot(k, BornApprox, k, curlyP)
+    ax2.plot(k, meanField)#, k, linPower, k, curlyP, k, BornApprox)
+    ax1.set_xlabel('$ k \,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+    ax2.set_xscale('log')
+    ax2.set_yscale('log')
+    ax1.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
+    ax1.set_title(r'$ \mathcal{P} $ and $ \bar{\mathcal{P}} $')
+    ax2.set_title('$ S_\mathrm{I} $')
 
     plt.figure(2)
     plt.plot(k, BornApprox)
-    plt.xlabel(r'$k/k_0 $ ')
+    plt.xlabel('$k \,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.title('Born approx case')
-    plt.ylabel(r'Power spectra $[k_0 ]$')
-    plt.xlabel('$k/k_0$')
+    plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
+    # I want to determine the slope on large scales
+    lin_k = np.log(k[100:118]) # with this you start with k = 10
+    linBornApprox =  BornApprox[100:118]
+    linBornApprox = np.log(linBornApprox)
+    slope = stats.linregress(lin_k,linBornApprox) # it returns an array with various values, 0 is the slope
+    linCurlyP = np.log(curlyP[100:118])
+    slopeCurly =  stats.linregress(lin_k,linCurlyP)
+    plt.title('Born')
 
     plt.figure(3)
     plt.plot(k, (BornApprox / linPower) -1)
-    plt.xlabel('$k/k_0$ ')
+    plt.xlabel('$k \,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.ylabel(r'$\bar{\mathcal{P}}/D^2_+ P_\delta  -1$ ')
+    plt.title('Comparison linear vs Born')
+    plt.ylabel(r'$ \bar{\mathcal{P}}/P_\delta^\mathrm{lin}  -1  $')
 
     plt.figure(4)
     plt.plot(k, BornApprox, k, curlyP)
-    plt.title(r'Born and $\mathcal{P}$')
-    plt.xlabel('$k/k_0\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
+    maxBorn = np.max(BornApprox)
+    indexMax = np.where(BornApprox == maxBorn)
+    indexMax = indexMax[0][0]
+    kMax = k[indexMax]
+
+    #  index_ = np.where(filename == 'a')
+    get_indexes = lambda filename, x: [i for (y, i) in zip(x, range(len(x))) if filename == y]
+    array_index_ = get_indexes("_",filename)
+    t_index = get_indexes("t",filename)
+    a = filename[(array_index_[1]+1):array_index_[2] ]
+    k0 = filename[(array_index_[3]+1):array_index_[4] ]
+    sigma =filename[(array_index_[5]+1):(t_index[1]-1) ]
+    a = float(a)
+    k0 = float(k0)
+    sigma = float(sigma)
+    print('a = %f' %a)
+    print('k0 = %f' %k0)
+    print('sigma = %f'%sigma)
+
+    print('Born peak = %f' %kMax)
+    print(' %f & %f $ \pm $ %f & %f $ \pm $ %f & %f \\\\ ' %(sigma, slope[0], slope[4], slopeCurly[0], slopeCurly[4],kMax))
+    plt.title(r'Gaussian power spectrum, $ k_0 = %f \, , \ \sigma = %f $ $ [h \, \mathrm{Mpc}^{-1} ] $ ' %(k0,sigma) )
+    plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'$ \bar{\mathcal{P}} $',r'$ \mathcal{P} $'), loc='lower left')
-    plt.ylabel('Power spectra $[k_0]$')
-
+    plt.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
+    plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
+    print("Slope Born = %f , error = %f"%(slope[0],slope[4] ))
+    print("Slope curlyP = %f, error = %f" %(slopeCurly[0],slopeCurly[4] ) )
 
     plt.figure(5)
     plt.plot(k, linPower, k, curlyP, k, BornApprox)
-    plt.title(r'$\mathcal{P} $, linear and Born spectrum')
-    plt.xlabel('$k/k_0\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
+    plt.title(r'Gaussian power spectrum')
+    plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'$ P_\delta^\mathrm{lin} $',r'$ \mathcal{P} $', r'$ \bar{\mathcal{P}} $'), loc='lower left')
-    plt.ylabel('Power spectra $[k_0]$')
-
-    plt.figure(6)
-    plt.plot(k, curlyP)
-    plt.xlabel('$k/k_0$ ')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.title(r'$\mathcal{P}$')
-    plt.ylabel(r'$\mathcal{P}$')
+    plt.legend((r'Linearly evolved $ P_\delta^\mathrm{lin} $',r'Free non-linearly evolved $  \mathcal{P} $', r'Born approximated $ \bar{\mathcal{P}} $'), loc='lower left')
+    plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
 
     plt.show()
 
