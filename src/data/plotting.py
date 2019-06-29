@@ -5,10 +5,13 @@ from scipy import stats
 
 # For latex stuff
 plt.rc('text', usetex=True)
-plt.rc('text.latex', preamble=r'\usepackage{amsmath}\usepackage{mathpazo}')
+plt.rc('text.latex', preamble=r'\usepackage{amsmath}\usepackage{mathpazo}',
+        )
         #  \usepackage{foo-name} `...')
 #matplotlib.verbose.level = 'debug-annoying'
 
+# To change font size
+# plt.rcParams.update({'font.size': 14})
 # The name of the text file you want to plot
 filename = sys.argv[1]
 
@@ -31,7 +34,6 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     ax1.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
     ax1.set_title(r'$ \mathcal{P} $ and $ \bar{\mathcal{P}} $')
     ax2.set_title('$ S_\mathrm{I} $')
-    n = 4 # Change this to put the proper index in the title
     #  plt.title(f'Mean interacting action, initial condition index $n = {n} $ ')
 
     plt.figure(2)
@@ -41,8 +43,8 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     plt.yscale('log')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     # I want to determine the slope on large scales
-    lin_k = np.log(k[100:113]) # with this you start with k = 10
-    linBornApprox =  BornApprox[100:113]
+    lin_k = np.log(k[110:122]) # with this you start with k = 10
+    linBornApprox =  BornApprox[110:122]
     # I remove the values that corresponds to too low values (giving error when
     # you do the log
     #  for x in linBornApprox:
@@ -53,7 +55,7 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     #          lin_k = np.delete(lin_k, index)
     linBornApprox = np.log(linBornApprox)
     slope = stats.linregress(lin_k,linBornApprox) # it returns an array with various values, 0 is the slope
-    linCurlyP = np.log(curlyP[100:113])
+    linCurlyP = np.log(curlyP[110:122])
     slopeCurly =  stats.linregress(lin_k,linCurlyP)
 
     plt.figure(3)
@@ -85,6 +87,10 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
         n= n[0:1]
         n = int(n)
         determine = False
+    elif n[2] =='k':
+        n= n[0:2]
+        n = int(n)
+        determine = False
     else:
         n=int(n)
         determine = False
@@ -95,7 +101,7 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
+    plt.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='upper left')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     print("Slope Born = %f , error = %f"%(slope[0],slope[4] ))
     print("Slope curlyP = %f, error = %f" %(slopeCurly[0],slopeCurly[4] ) )
