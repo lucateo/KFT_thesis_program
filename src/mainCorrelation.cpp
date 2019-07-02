@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 /**
- * automatizing correlation computation 
+ * automatizing correlation computation
    */
 int main ()
 {
@@ -11,38 +11,38 @@ int main ()
   astro::tophatFilter filter;
 
   // Parameters to look at
-  double a = 1.0;
+  double a = 1;
   // Initial condition for the loop
-  int i_initial = 15;
+  int i_initial = 21;
   double k0_fixed = 10.0;
-  double sigma_fixed = 0.01;
-  int initial_fixed = 18;
+  double sigma_fixed = 0.215443 ;
+  int initial_fixed = 4;
   // Determines the particular program to run
   // 0 = loop dark matter, 1 = loop gaussian,
   // 2 = fixed dark matter, 3 = fixed gaussian, 4 = gaussian loop sigma only
-  // 5 = gaussian loop sigma and a only
-  int determine_program = 2;
-  
+  // 5 = gaussian loop sigma and a only, 6 = trial higher order
+  int determine_program = 6;
+
   if (determine_program == 0)
   {
-    while ( i_initial < 23)
+    while ( i_initial < 32)
     {
       for (int j= 0; j< 5; j++)
       {
-        double a_loop = astro::x_logarithmic (double(j), 5.0, 0.1,1.0);
+        double a_loop = astro::x_logarithmic (double(j), 5.0, 0.01,1.0);
         testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
           i_initial, k0_fixed, sigma_fixed);
         // power_spectrum.setInitialCondition(i_initial);
         KFT::kftCosmology C (&cosmological_model, &power_spectrum);
         power_spectrum.writeAllSpectrum(&C,a_loop);
-        
-        std::cout << "Stop computing, arrived: n = " <<  i_initial << " a = " 
+
+        std::cout << "Stop computing, arrived: n = " <<  i_initial << " a = "
           << a_loop  << std::endl;
-        
+
         usleep(10000000); // sleeps 10 seconds
         std::cout << "Start computing" << std::endl;
       }
-      i_initial=i_initial+1;
+      i_initial=i_initial+2;
     }
   }
   // Loop for gaussian initial condition
@@ -70,16 +70,16 @@ int main ()
       }
   }
 
-  // Dark spectrum for fixed condition  
+  // Dark spectrum for fixed condition
   if (determine_program == 2)
   {
-    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
       initial_fixed, k0_fixed, sigma_fixed);
     KFT::kftCosmology C (&cosmological_model, &power_spectrum);
     power_spectrum.writeAllSpectrum(&C,a);
   }
 
-  // Gaussian initial for fixed condition 
+  // Gaussian initial for fixed condition
   if (determine_program == 3)
   {
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 0,
@@ -103,15 +103,15 @@ int main ()
       std::cout << "Start computing" << std::endl;
     }
   }
-  
+
   if (determine_program == 5)
   {
-    for (int i = 0; i<8; i++)
+    for (int i = 0; i<10; i++)
     {
-      for (int j=0; j< 5; j++)
+      for (int j=0; j< 3; j++)
       {
-        double sigma_loop = astro::x_logarithmic (double(i), 8.0, 5.0,10.0);
-        double a_loop = astro::x_logarithmic (double(j), 5.0, 0.01,1.0);
+        double sigma_loop = astro::x_logarithmic (double(i), 10.0, 8.0,30.0);
+        double a_loop = astro::x_logarithmic (double(j), 3.0, 0.01,1.0);
         testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 0,
           k0_fixed, sigma_loop);
         KFT::kftCosmology C (&cosmological_model, &power_spectrum);
@@ -124,6 +124,17 @@ int main ()
     }
   }
 
+  if (determine_program == 6)
+  {
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
+        initial_fixed, k0_fixed, sigma_fixed);
+    KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+    double l_parallel = -0.5;
+    double k_prime = 1;
+    double mu = 1;
+    // power_spectrum.writeAllHigherOrder(&C , a, k_prime, l_parallel);
+    power_spectrum.writeBiSpectrum(&C , a, k_prime, mu);
+  }
     return 0;
 }
 

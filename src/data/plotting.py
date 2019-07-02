@@ -87,7 +87,7 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
         n= n[0:1]
         n = int(n)
         determine = False
-    elif n[2] =='k':
+    elif len(n) >2 and n[2] =='k':
         n= n[0:2]
         n = int(n)
         determine = False
@@ -101,7 +101,7 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     plt.xlabel('$k\,\, [h \, \mathrm{Mpc}^{-1} ]$ ')
     plt.xscale('log')
     plt.yscale('log')
-    plt.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='upper left')
+    plt.legend((r'Born approximated $ \bar{\mathcal{P}} $',r'Free non-linearly evolved $ \mathcal{P} $'), loc='lower left')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     print("Slope Born = %f , error = %f"%(slope[0],slope[4] ))
     print("Slope curlyP = %f, error = %f" %(slopeCurly[0],slopeCurly[4] ) )

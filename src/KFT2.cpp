@@ -217,7 +217,7 @@ void testPowerSpectrum::writeAllGaussian(KFT::kftCosmology * C, double a)
   os_cf << "data/cf_table/cf_table_a_"<< a << "_k0_"<< m_gauss_k0 << "_sigma_"
     << m_sigma_gauss << ".d";
 
-  os << "data/GaussSpectra_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
+  os << "data/GaussSpectrakmax10000_a_" << a << "_k0_"<< m_gauss_k0 << "_sigma_"
     << m_sigma_gauss << ".txt";
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
@@ -243,7 +243,7 @@ void testPowerSpectrum::writeAllGaussian(KFT::kftCosmology * C, double a)
   write.add_header ("# column 3: linearly evolved power spectrum");
   write.add_header ("# column 4: curly P power spectrum from KFT");
   write.add_header ("# column 5: mean-field non-linear KFT power spectrum");
-  write (k_min, k_max, n_bins, astro::LOG_SPACING);
+  write (k_min, 10000.0, n_bins, astro::LOG_SPACING);
 }
 
 

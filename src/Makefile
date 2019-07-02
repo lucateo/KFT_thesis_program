@@ -34,7 +34,7 @@ DEPS =../include/KFT2.h
 MAIN_SOURCE =mainCorrelation
 
 # put here also all the other sources
-SOURCES = $(MAIN_SOURCE).cpp KFT2.cpp functionTable.cpp osc_integrator.cpp bardeenPowerSpectrum.cpp smithEtalPowerSpectrum.cpp# functions.cpp write.cpp 
+SOURCES = $(MAIN_SOURCE).cpp KFT2.cpp higherOrder.cpp functionTable.cpp osc_integrator.cpp bardeenPowerSpectrum.cpp smithEtalPowerSpectrum.cpp# functions.cpp write.cpp 
 
 _OBJ = $(patsubst %.cpp,%.o,$(SOURCES))
 # Retrieving the object files specified in _OBJ in the subdirectory ODIR (here obj)

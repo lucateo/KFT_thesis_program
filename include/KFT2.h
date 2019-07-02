@@ -103,5 +103,18 @@ class testPowerSpectrum: public astro::powerSpectrum
   void writeAllSpectrum(KFT::kftCosmology * C, double a);
   /// The version for Gaussian initial condition of writeAllSpectrum
   void writeAllGaussian(KFT::kftCosmology * C, double a);
+  /// For higher order curly P
+  void writeAllHigherOrder(KFT::kftCosmology * C, double a, double k_prime, 
+      double l_parallel);
+  void writeBiSpectrum(KFT::kftCosmology * C, double a,
+    double k_prime, double mu);
 };
 
+class powerSpectraModified: public KFT::powerSpectra
+{
+  public:
+  powerSpectraModified(KFT::kftCosmology *cosmology_in);
+  double curlyP_ij (double k, double a, double l_parallel);
+  double bispectrumFree (double k, double a, double k_prime, double mu);
+
+};
