@@ -114,7 +114,8 @@ class powerSpectraModified: public KFT::powerSpectra
 {
   public:
   powerSpectraModified(KFT::kftCosmology *cosmology_in);
-  double curlyP_ij (double k, double a, double l_parallel);
+  double curlyP_ij (double a, double mu_ij, double mu_i, double mu_j, 
+      double K_ij, double L_i, double L_j);
   double bispectrumFree (double k, double a, double k_prime, double mu);
 
 };

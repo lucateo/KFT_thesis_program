@@ -129,7 +129,6 @@ int main ()
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
         initial_fixed, k0_fixed, sigma_fixed);
     KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-    double l_parallel = -0.5;
     double k_prime = 1;
     double mu = 1;
     // power_spectrum.writeAllHigherOrder(&C , a, k_prime, l_parallel);
