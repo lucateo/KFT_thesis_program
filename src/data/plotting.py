@@ -43,8 +43,8 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     plt.yscale('log')
     plt.ylabel('Power spectra $[h^{-3}\,\mathrm{Mpc}^3 ]$')
     # I want to determine the slope on large scales
-    lin_k = np.log(k[110:122]) # with this you start with k = 10
-    linBornApprox =  BornApprox[110:122]
+    lin_k = np.log(k[70:80]) # with this you start with k = 10
+    linBornApprox =  BornApprox[70:80]
     # I remove the values that corresponds to too low values (giving error when
     # you do the log
     #  for x in linBornApprox:
@@ -55,7 +55,7 @@ if filename[0:2] == "po" or filename[0:4]=="luca":
     #          lin_k = np.delete(lin_k, index)
     linBornApprox = np.log(linBornApprox)
     slope = stats.linregress(lin_k,linBornApprox) # it returns an array with various values, 0 is the slope
-    linCurlyP = np.log(curlyP[110:122])
+    linCurlyP = np.log(curlyP[70:80])
     slopeCurly =  stats.linregress(lin_k,linCurlyP)
 
     plt.figure(3)

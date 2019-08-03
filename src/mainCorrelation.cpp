@@ -13,7 +13,7 @@ int main ()
   // Parameters to look at
   double a = 1;
   // Initial condition for the loop
-  int i_initial = 21;
+  int i_initial = 310;
   double k0_fixed = 10.0;
   double sigma_fixed = 0.215443 ;
   int initial_fixed = 4;
@@ -25,9 +25,9 @@ int main ()
 
   if (determine_program == 0)
   {
-    while ( i_initial < 32)
+    while ( i_initial < 400)
     {
-      for (int j= 0; j< 5; j++)
+      for (int j= 4; j< 5; j++)
       {
         double a_loop = astro::x_logarithmic (double(j), 5.0, 0.01,1.0);
         testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
@@ -42,7 +42,7 @@ int main ()
         usleep(10000000); // sleeps 10 seconds
         std::cout << "Start computing" << std::endl;
       }
-      i_initial=i_initial+2;
+      i_initial=i_initial+20;
     }
   }
   // Loop for gaussian initial condition
@@ -129,10 +129,9 @@ int main ()
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
         initial_fixed, k0_fixed, sigma_fixed);
     KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-    double k_prime = 1;
-    double mu = 1;
+    double ratio = 2;
     // power_spectrum.writeAllHigherOrder(&C , a, k_prime, l_parallel);
-    power_spectrum.writeBiSpectrum(&C , a, k_prime, mu);
+    power_spectrum.writeBiSpectrumFull(&C , a, ratio);
   }
     return 0;
 }

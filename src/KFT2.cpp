@@ -61,33 +61,12 @@ double testPowerSpectrum::operator () (const double k, const double a)
   else if (m_initial_condition == 19 )
     return prefactor*k/gsl_pow_int(sqrt(1.0 + gsl_pow_2(kappa)), 19);
   // other cases
-  else
+  else if (m_initial_condition < 100)
     return prefactor*k/(exp(double(double(m_initial_condition)/2.0)
              *log(1.0 + gsl_pow_2(kappa))));
-  // switch (m_initial_condition) {
-  //   // Gaussian case, k here is actually k/gaussian_k0, so
-  //   // gaussian_k0 sets the unit of measure
-  //   case 0 : {
-  //     double result = prefactor * exp(-m_gaussNorm*gsl_pow_2(k -1.0));
-  //     // if (result < 1e-15)
-  //     //     return 0;
-  //     // else
-  //         return result;
-  //   }
-  //   // Power case, small integer powers
-  //   case 4 : return prefactor*k/gsl_pow_2(1.0 + gsl_pow_2(kappa));
-  //   case 6 : return prefactor*k/gsl_pow_3(1.0 + gsl_pow_2(kappa));
-  //   case 8 : return prefactor*k/gsl_pow_4(1.0 + gsl_pow_2(kappa));
-  //   case 10 : return prefactor*k/gsl_pow_5(1.0 + gsl_pow_2(kappa));
-  //   // Power case, half integer powers
-  //   case 3 : return prefactor*k/gsl_pow_3( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
-  //   case 5 : return prefactor*k/gsl_pow_5( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
-  //   case 7 : return prefactor*k/gsl_pow_7( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
-  //   case 9 : return prefactor*k/gsl_pow_9( sqrt(1.0 + gsl_pow_2(kappa) ) ) ;
-  //   // non integer powers, i.e. consider number_in/10
-  //   default : return prefactor*k/(exp(double(double(m_initial_condition)/20.0)
-  //               *log(1.0 + gsl_pow_2(kappa))));
-  //   }
+  else
+    return prefactor*k/(exp(double(double(m_initial_condition)/200.0)
+             *log(1.0 + gsl_pow_2(kappa))));
 }
 
 // trial function (to see if everything is ok)
@@ -171,15 +150,29 @@ void testPowerSpectrum::writeSpectrum (KFT::kftCosmology * C, double a)
 void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
-    << m_initial_condition << ".d";
+  if (m_initial_condition < 100)
+  {
+    os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
+      << m_initial_condition << ".d";
 
-  os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
-    << m_initial_condition << ".d";
+    os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
+      << m_initial_condition << ".d";
 
-  os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition
-    << ".txt";
+    os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition
+      << ".txt";
+  }
+  else if (m_initial_condition > 100)
+  {
+    double m_initial_print = double(m_initial_condition)/100.0;
+    os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
+      << m_initial_print << ".d";
 
+    os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
+      << m_initial_print << ".d";
+
+    os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_print
+      << ".txt";
+  }
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
   std::string power_file = os.str();

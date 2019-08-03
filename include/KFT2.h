@@ -66,7 +66,7 @@ class testPowerSpectrum: public astro::powerSpectrum
   double m_gauss_k0 = 0.01; ///< determines  \f$ k_0 \f$ for gauss initial condition
   double m_gaussNorm; ///< determines \f$ k_0^2/(2 \sigma^2) \f$ factor in gaussian initial condition
   double a_initial = 1.0e-3; ///< deterines the initial time
-  const double k_min = 1.0e-3, k_max = 100.0;
+  const double k_min = 1.0e-3, k_max = 1.0e5;
   const double q_min = 1.0e-5, q_max = 1.0e5;
   const int n_bins = 128; ///< number of division in writing functions
 
@@ -106,8 +106,9 @@ class testPowerSpectrum: public astro::powerSpectrum
   /// For higher order curly P
   void writeAllHigherOrder(KFT::kftCosmology * C, double a, double k_prime, 
       double l_parallel);
-  void writeBiSpectrum(KFT::kftCosmology * C, double a,
-    double k_prime, double mu);
+  void writeBiSpectrum(KFT::kftCosmology * C, double a, double ratio);
+  /// Bispectrum with all the columns with various terms
+  void writeBiSpectrumFull(KFT::kftCosmology * C, double a, double ratio);
 };
 
 class powerSpectraModified: public KFT::powerSpectra
@@ -116,6 +117,8 @@ class powerSpectraModified: public KFT::powerSpectra
   powerSpectraModified(KFT::kftCosmology *cosmology_in);
   double curlyP_ij (double a, double mu_ij, double mu_i, double mu_j, 
       double K_ij, double L_i, double L_j);
-  double bispectrumFree (double k, double a, double k_prime, double mu);
+  double bispectrumFree (double k, double a, double k_prime, double mu );
+  double PPP_term (double k1, double a,
+    double k2, double mu);
 
 };
