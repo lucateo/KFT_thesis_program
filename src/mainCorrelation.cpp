@@ -21,6 +21,7 @@ int main ()
   // 0 = loop dark matter, 1 = loop gaussian,
   // 2 = fixed dark matter, 3 = fixed gaussian, 4 = gaussian loop sigma only
   // 5 = gaussian loop sigma and a only, 6 = trial higher order
+  // 7 = control spectrum function, 8 = Trial function for higher orders 
   int determine_program = 6;
 
   if (determine_program == 0)
@@ -129,10 +130,42 @@ int main ()
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
         initial_fixed, k0_fixed, sigma_fixed);
     KFT::kftCosmology C (&cosmological_model, &power_spectrum);
-    double ratio = 2;
-    // power_spectrum.writeAllHigherOrder(&C , a, k_prime, l_parallel);
-    power_spectrum.writeBiSpectrumFull(&C , a, ratio);
+    double ratio = 2.0;
+    double a_local = 1.0;
+    int determine = 1;
+    int i_initial = 0;
+    power_spectrum.writeBiSpectrumFixExpDamping(&C , a_local, ratio,determine,i_initial);
   }
-    return 0;
+
+  if (determine_program == 7)
+  {
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
+      420, k0_fixed, sigma_fixed);
+    KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+    double a_local = 1.0;
+    power_spectrum.writeAllSpectrumControl(&C,a_local);
+  }
+  
+  if (determine_program == 8)
+  {
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
+      initial_fixed, k0_fixed, sigma_fixed);
+    KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+    std::ostringstream os_ps, os_cf ;
+    os_ps << "data/ps_table/ps_tableHigherOrder_a_" << a << "_n_initial_"
+      << initial_fixed << ".d";
+
+    os_cf << "data/cf_table/cf_tableHigherOrder_a_"<< a << "_n_initial_"
+      << initial_fixed << ".d";
+
+    std::string ps_table = os_ps.str();
+    std::string cf_table = os_cf.str();
+    powerSpectraModified P (&C);
+    P.initCorrelation (ps_table, cf_table);
+    double a_local = 0.01;
+    double k = 1.0;
+    P.Trial(a_local,k);
+  }
+  return 0;
 }
 

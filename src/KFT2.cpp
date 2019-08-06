@@ -200,6 +200,68 @@ void testPowerSpectrum::writeAllSpectrum(KFT::kftCosmology * C, double a)
   write (k_min, k_max, n_bins, astro::LOG_SPACING);
 }
 
+void testPowerSpectrum::writeAllSpectrumControl(KFT::kftCosmology * C, double a)
+{
+  std::ostringstream os, os_ps, os_cf ;
+  if (m_initial_condition < 100)
+  {
+    os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
+      << m_initial_condition << ".d";
+
+    os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
+      << m_initial_condition << ".d";
+
+    os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_condition
+      << ".txt";
+  }
+  else if (m_initial_condition > 100)
+  {
+    double m_initial_print = double(m_initial_condition)/100.0;
+    os_ps << "data/ps_table/ps_table_a_" << a << "_n_initial_"
+      << m_initial_print << ".d";
+
+    os_cf << "data/cf_table/cf_table_a_"<< a << "_n_initial_"
+      << m_initial_print << ".d";
+
+    os << "data/powerSpectra_a_" << a << "_n_initial_"<< m_initial_print
+      << ".txt";
+  }
+  std::string ps_table = os_ps.str();
+  std::string cf_table = os_cf.str();
+  std::string power_file = os.str();
+
+  // 0 = do correlation table, 1=do not do correlation table and start from scratch
+  // 2= start from middle
+  int determine = 0;
+  if (determine == 0)
+  {
+    KFT::iniCorrTable corr_table
+      (C->get_power_spectrum (), a_initial, q_min, q_max);
+
+    corr_table.print_tables (ps_table, cf_table);
+  }
+  KFT::powerSpectra P (C);
+  P.initCorrelation (ps_table, cf_table);
+  std::ofstream outfile;
+  if (determine == 1 || determine == 0)
+  {
+    outfile.open(power_file);
+    outfile << "k" << "\t" << "Mean Field" << "\t" << "Linearly evolved" << "\t"
+      << "curly P" << "\t" << "Full curly P" << std::endl;
+  }
+  else if (determine==2)
+    outfile.open(power_file, std::ios_base::app);
+
+  for (int i = 0; i < n_bins; i++)
+  {
+    double k = astro::x_logarithmic(i,n_bins, k_min, 100000.0);
+    outfile << k << "\t" << P.meanF(k,a) << "\t" << P.linearP(k,a) << "\t"
+      << P.curlyP(k,a) << "\t" << P.BornApproxP(k,a) << std::endl;
+    std::cout << "i = " << i << std::endl;
+  }
+  outfile.close();
+}
+
 // For the Gaussian initial conditions
 void testPowerSpectrum::writeAllGaussian(KFT::kftCosmology * C, double a)
 {

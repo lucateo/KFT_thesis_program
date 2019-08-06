@@ -18,6 +18,7 @@ print(txt2)
 i=0
 # 0: gaussian, 1: dark spectrum, 2: peak graph
 determine_program = 2
+
 if determine_program ==0:
     for textfile in txt:
         plt.figure(i)
@@ -47,7 +48,6 @@ if determine_program ==0:
         linCurlyP = np.log(curlyP[100:118])
         slopeCurly =  stats.linregress(lin_kCurly,linCurlyP)
 
-        #  print('a = %f , k0 = %f , sigma = %f , Born peak = %f' %( a, k0 , sigma , kMax))
         print('%.2f & %.4f & %f $ \pm $ %f & %f $ \pm $ %f & %f \\\\  ' %(a, sigma, slope[0],
             slope[4], slopeCurly[0], slopeCurly[4],kMax))
         plt.plot(k, BornApprox, k, curlyP)
@@ -90,7 +90,6 @@ if determine_program ==1:
         linCurlyP = np.log(curlyP[100:118])
         slopeCurly =  stats.linregress(lin_kCurly,linCurlyP)
 
-        #  print('a = %f , k0 = %f , sigma = %f , Born peak = %f' %( a, k0 , sigma , kMax))
         print('%.2f & %f $ \pm $ %f & %f $ \pm $ %f & %f \\\\  ' %(a, slope[0],
             slope[4], slopeCurly[0], slopeCurly[4],kMax))
         plt.plot(k, BornApprox, k, curlyP)
@@ -149,5 +148,3 @@ if determine_program == 2:
 plt.show()
 
 
-# To change font size
-# plt.rcParams.update({'font.size': 14})
