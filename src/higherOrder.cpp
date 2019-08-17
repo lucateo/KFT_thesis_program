@@ -73,46 +73,63 @@ double powerSpectraModified::PPP_term (double k1, double a,
   return kernel(q_min,q_max);
 }
 
-
 void testPowerSpectrum::writeAllHigherOrder(KFT::kftCosmology * C, double a,
-    double k2, double mu)
+    double k2, double mu, int determine, int i_initial)
 {
   std::ostringstream os, os_ps, os_cf ;
-  os_ps << "data/ps_table/ps_tableHigherOrder_a_" << a << "_n_initial_"
+  os_ps << "data/ps_table/ps_tableHigherOrder_n_initial_"
     << m_initial_condition << ".d";
 
-  os_cf << "data/cf_table/cf_tableHigherOrder_a_"<< a << "_n_initial_"
+  os_cf << "data/cf_table/cf_tableHigherOrder_n_initial_"
     << m_initial_condition << ".d";
 
-  os << "data/powerSpectraHigherOrder_a_" << a << "_n_initial_"<< m_initial_condition
-    << ".txt";
+  os << "data/powerSpectraCurlyPij_a_" << a << "_n_initial_"<< m_initial_condition
+    << "_k2_" << k2 << "_mu_"<< mu  << ".txt";
 
   std::string ps_table = os_ps.str();
   std::string cf_table = os_cf.str();
   std::string power_file = os.str();
 
-  KFT::iniCorrTable corr_table
-    (C->get_power_spectrum (), a_initial, q_min, q_max);
+  if (determine == 0)
+  {
+    KFT::iniCorrTable corr_table
+      (C->get_power_spectrum (), a_initial, q_min, q_max);
 
-  corr_table.print_tables (ps_table, cf_table);
-
+    corr_table.print_tables (ps_table, cf_table);
+  }
   powerSpectraModified P (C);
   P.initCorrelation (ps_table, cf_table);
+  std::ofstream outfile;
+  if (determine == 1 || determine == 0)
+  {
+    outfile.open(power_file);
+    outfile << "k" << "\t" << "P1" << "\t" << "P2" << "\t"
+      << "P3" << "\t" << "P4" << std::endl;
+  }
+  else if (determine==2)
+    outfile.open(power_file, std::ios_base::app);
 
-  // double Fixed_mean = P.meanF(k2, a);
+  for (int i = i_initial; i < n_bins; i++)
+  {
+    double k1 = astro::x_logarithmic(i,n_bins,k_min,k_max);
+    double k3_module = sqrt(k1*k1 + k2*k2+ 2*mu*k1*k2);
+    double factor1 = k1*k1 + k1*k2*mu;
+    double factor2 = k2*k2 + k2*k1*mu;
 
-  astro::functionWriter write (power_file);
-  // write.push_back ([&] (double k) { return P.meanF (k, a); });
-  write.push_back ([&] (double k) { return P.curlyP_ij (a, -mu,
-        mu ,-1,-k,-k-k2, k); });
-  // write.push_back ([&] (double k) { return Fixed_mean; });
-  write.add_header ("# Different types of cosmic density-fluctuation");
-  write.add_header ("# power spectra as functions of wave number");
-  write.add_header ("# column 1: wave number k in h/Mpc");
-  // write.add_header ("# column 2: mean-field interaction term");
-  write.add_header ("# column 2: curly P power spectrum");
-  // write.add_header ("# column 4: fixed mean term");
-  write (k_min, k_max, n_bins, astro::LOG_SPACING);
+    double P_31_1= P.curlyP_ij(a, -factor1/(k1*k3_module) , factor1/(k1*k3_module) ,
+        -1,k1,k3_module, k1);
+    std::cout << "number = " << i << std::endl;
+    double P_32_1=P.curlyP_ij(a,-factor2/(k2*k3_module), factor2/(k2*k3_module),
+        -1,k2,k3_module,k2);
+
+    double P_21_2= P.curlyP_ij(a, mu, -mu, -1, k1, k2,k1);
+    double P_32_2= P.curlyP_ij(a, -factor2/(k2*k3_module), 1,-factor2/(k2*k3_module),
+        k3_module, k3_module,k2);
+
+    outfile << k1 << "\t" << P_31_1 << "\t" << P_32_1 << "\t"
+      << P_21_2 << "\t" << P_32_2 << std::endl;
+  }
+  outfile.close();
 }
 
 

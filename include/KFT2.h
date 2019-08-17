@@ -75,7 +75,7 @@ class testPowerSpectrum: public astro::powerSpectrum
   double m_gauss_k0 = 0.01; ///< determines  \f$ k_0 \f$ for gauss initial condition
   double m_gaussNorm; ///< determines \f$ k_0^2/(2 \sigma^2) \f$ factor in gaussian initial condition
   double a_initial = 1.0e-3; ///< deterines the initial time
-  const double k_min = 1.0e-3, k_max = 1.0e5; //< determines plotting \f$ k \f$ range
+  const double k_min = 1.0e-3, k_max = 1.0e3; //< determines plotting \f$ k \f$ range
   const double q_min = 1.0e-5, q_max = 1.0e5; //< determines \f$ q \f$ integration range
   const int n_bins = 128; ///< number of division in writing functions
 
@@ -100,7 +100,7 @@ class testPowerSpectrum: public astro::powerSpectrum
   void writeAllGaussian(KFT::kftCosmology * C, double a);
   /// For higher order curly P
   void writeAllHigherOrder(KFT::kftCosmology * C, double a, double k_prime, 
-      double l_parallel);
+      double mu, int determine, int i_initial);
   /// Bispectrum with all the columns with various terms
   /// \param determine if determine = 0, computes correlation table and prints,
   /// if determine = 1 it does not compute correlation table and prints the header,

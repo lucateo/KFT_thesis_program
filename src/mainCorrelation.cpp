@@ -22,7 +22,8 @@ int main ()
   // 2 = fixed dark matter, 3 = fixed gaussian, 4 = gaussian loop sigma only
   // 5 = gaussian loop sigma and a only, 6 = trial higher order
   // 7 = control spectrum function, 8 = Trial function for higher orders 
-  int determine_program = 6;
+  // 9 = curly P_ij trial function
+  int determine_program = 9;
 
   if (determine_program == 0)
   {
@@ -165,6 +166,19 @@ int main ()
     double a_local = 0.01;
     double k = 1.0;
     P.Trial(a_local,k);
+  }
+  
+  if (determine_program == 9)
+  {
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
+      4, k0_fixed, sigma_fixed);
+    KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+    double a_local = 1.0;
+    double k_prime = 1.0;
+    double mu = 0.5;
+    int determine = 2;
+    int i_initial =75;
+    power_spectrum.writeAllHigherOrder(&C,a_local, k_prime,mu, determine, i_initial);
   }
   return 0;
 }
