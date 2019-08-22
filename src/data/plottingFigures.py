@@ -363,7 +363,7 @@ if determine_program==4:
     
     plt.figure(2)
     plt.plot(theta5,bispectrum5/QN_denominator5, theta6,bispectrum6/QN_denominator6) 
-    plt.title(r'$ Q_3 $, $ a = 0.05 \, ,$ $  r = %.3f \\ \sigma =0.046 , \ k_1 = %.3f , \ [h \, \mathrm{Mpc}^{-1} ] $  ' %(ratio, k1))
+    plt.title(r'$ Q_3 $, $ a = 0.05 \, ,$ $  r = %.3f \\ \sigma =0.046 , \ k_1 = %.3f  \ [h \, \mathrm{Mpc}^{-1} ] $  ' %(ratio, k1))
     plt.xlabel(r'$\theta/\pi $ ')
     plt.ylabel(r'$ Q_3 $')
     plt.legend((r'$k_0 = 0.01 \, h \, \mathrm{Mpc}^{-1}$',r'$k_0 = 0.1 \, h \, \mathrm{Mpc}^{-1}$'))
@@ -371,7 +371,7 @@ if determine_program==4:
     
     plt.figure(3)
     plt.plot(theta3,bispectrum3/QN_denominator3, theta4,bispectrum4/QN_denominator4) 
-    plt.title(r'$ Q_3 $, $ a = %.2f \, ,$ $  r = %.3f \\  \sigma =0.599 , \ k_1 = %.3f , \ [h \, \mathrm{Mpc}^{-1} ] $  ' %(a, ratio, k1))
+    plt.title(r'$ Q_3 $, $ a = %.2f \, ,$ $  r = %.3f \\  \sigma =0.599 , \ k_1 = %.3f  \ [h \, \mathrm{Mpc}^{-1} ] $  ' %(a, ratio, k1))
     plt.xlabel(r'$\theta/\pi $ ')
     plt.ylabel(r'$ Q_3 $')
     plt.legend((r'$k_0 = 0.01 \, h \, \mathrm{Mpc}^{-1}$',r'$k_0 = 0.1 \, h \, \mathrm{Mpc}^{-1}$'))
@@ -379,7 +379,7 @@ if determine_program==4:
     
     plt.figure(4)
     plt.plot(theta7,bispectrum7/QN_denominator7, theta8,bispectrum8/QN_denominator8) 
-    plt.title(r'$ Q_3 $, $ a = 0.05 \, ,$ $  r = %.3f \\ \sigma =0.599 , k_1 = %.3f , \ [h \, \mathrm{Mpc}^{-1} ] $  ' %(ratio, k1))
+    plt.title(r'$ Q_3 $, $ a = 0.05 \, ,$ $  r = %.3f \\ \sigma =0.599 , k_1 = %.3f  \ [h \, \mathrm{Mpc}^{-1} ] $  ' %(ratio, k1))
     plt.xlabel(r'$\theta/\pi $')
     plt.ylabel(r'$ Q_3 $')
     plt.legend((r'$k_0 = 0.01 \, h \, \mathrm{Mpc}^{-1}$',r'$k_0 = 0.1 \, h \, \mathrm{Mpc}^{-1}$'))
@@ -437,7 +437,7 @@ if determine_program ==5:
     
     plt.figure(1)
     plt.plot(theta4,bispectrum4/QN_denominator4, theta5, bispectrum5/QN_denominator5) 
-    plt.title(r'$ Q_3 $, $ a = %.2f \, ,$ $ k_1 = %.3f , \ [h \, \mathrm{Mpc}^{-1} ], \ r = %.3f $' %(a, k1, ratio))
+    plt.title(r'$ Q_3 $, $ a = %.2f \, ,$ $ k_1 = %.3f  \ [h \, \mathrm{Mpc}^{-1} ], \ r = %.3f $' %(a, k1, ratio))
     plt.xlabel(r'$\theta/\pi $ ')
     plt.ylabel(r'$ Q_3 $')
     plt.yscale('log')
@@ -447,7 +447,7 @@ if determine_program ==5:
     plt.figure(2)
     plt.plot(theta8,bispectrum8/QN_denominator8, theta11, bispectrum11/QN_denominator11,
             theta20, bispectrum20/QN_denominator20) 
-    plt.title(r'$ Q_3 $ , $ a = %.2f \, ,$ $ k_1 = %.3f , \ [h \, \mathrm{Mpc}^{-1} ], \ r = %.3f $' %(a, k1, ratio))
+    plt.title(r'$ Q_3 $ , $ a = %.2f \, ,$ $ k_1 = %.3f  \ [h \, \mathrm{Mpc}^{-1} ], \ r = %.3f $' %(a, k1, ratio))
     plt.xlabel(r'$\theta/\pi $ ')
     plt.ylabel(r'$ Q_3 $')
     plt.yscale('log')
@@ -456,7 +456,7 @@ if determine_program ==5:
 
     plt.figure(3)
     plt.plot(theta,bispectrum/QN_denominator) 
-    plt.title(r'$ Q_3 $ , $ a = 1.0 \, ,$ $ k_1 = %.3f , \ [h \, \mathrm{Mpc}^{-1} ], \ r = %.3f $' %(k1, ratio))
+    plt.title(r'$ Q_3 $ , $ a = 1.0 \, ,$ $ k_1 = %.3f  \ [h \, \mathrm{Mpc}^{-1} ], \ r = %.3f $' %(k1, ratio))
     plt.xlabel(r'$\theta/\pi $ ')
     plt.ylabel(r'$ Q_3 $')
     #  plt.yscale('log')
