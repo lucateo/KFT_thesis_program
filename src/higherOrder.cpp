@@ -132,6 +132,10 @@ void testPowerSpectrum::writeAllHigherOrder(KFT::kftCosmology * C, double a,
   outfile.close();
 }
 
+double F2_kernel(double k1,double k2, double mu)
+{
+  return 0.5 +0.5*mu*(k1/k2 + k2/k1)+ 0.5*mu*mu;
+}
 
 void testPowerSpectrum::writeBiSpectrumFull(KFT::kftCosmology * C, double a,
     double ratio, int determine, int i_initial)
@@ -216,11 +220,17 @@ void testPowerSpectrum::writeBiSpectrumFull(KFT::kftCosmology * C, double a,
     double P2 = P.curlyP(k2,a);
     double P3 = P.curlyP(k3_module,a);
     double Q_N_denominator = P1*P2 + P2*P3 + P1*P3;
-    double first_factors = 0; //2*M_PI*(P_31_0 + P_21_0 + P_32_0);
-    double second_factors = P_31_1*P_32_1 + P_21_2*P_32_2 + P_31_3*P_21_3;
-    double bispectrum = first_factors + second_factors;
+    double bispectrum = P_31_1*P_32_1 + P_21_2*P_32_2 + P_31_3*P_21_3;
+    // For linear Eulerian
+    double mu_31 = -(mu*k2*k1 + k1*k1)/(k1*k3_module);
+    double mu_32 = -(mu*k2*k1 + k2*k2)/(k2*k3_module);
+    double linear_Eulerian = operator()(k1,a)*operator()(k2,a)*F2_kernel(k1,k2,mu)
+      +operator()(k2,a)*operator()(k3_module,a)*F2_kernel(k2,k3_module,mu_32) 
+      + operator()(k1,a)*operator()(k3_module,a)*F2_kernel(k1,k3_module,mu_31);
+    linear_Eulerian = linear_Eulerian/(operator()(k1,a)*operator()(k2,a) +
+        operator()(k2,a)*operator()(k3_module,a) + operator()(k1,a)*operator()(k3_module,a));
 
-    outfile << mu << "\t" << first_factors << "\t" << second_factors << "\t"
+        outfile << mu << "\t" << linear_Eulerian << "\t" << bispectrum << "\t"
       << Q_N_denominator << "\t" << bispectrum << std::endl;
   }
   outfile.close();

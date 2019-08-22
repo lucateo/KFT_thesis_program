@@ -152,3 +152,6 @@ class powerSpectraModified: public KFT::powerSpectra
   /// try to compute \f$ \mathcal{P} \mathcal{P}\mathcal{P}\f$ factor
   double PPP_term (double k1, double a, double k2, double mu);
 };
+
+/// \f$ 2F_2 \f$ kernel of Eulerian PT
+double F2_kernel(double k1,double k2, double mu);

@@ -21,9 +21,10 @@ int main ()
   // 0 = loop dark matter, 1 = loop gaussian,
   // 2 = fixed dark matter, 3 = fixed gaussian, 4 = gaussian loop sigma only
   // 5 = gaussian loop sigma and a only, 6 = trial higher order
-  // 7 = control spectrum function, 8 = Trial function for higher orders 
-  // 9 = curly P_ij trial function
-  int determine_program = 9;
+  // 7 = control spectrum function, 8 = Trial function for higher orders
+  // 9 = curly P_ij trial function, 10 = loop dark matter bispectrum
+  // 11 = loop Gaussian bispectrum
+  int determine_program = 6;
 
   if (determine_program == 0)
   {
@@ -128,14 +129,14 @@ int main ()
 
   if (determine_program == 6)
   {
-    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 
+    testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
         initial_fixed, k0_fixed, sigma_fixed);
     KFT::kftCosmology C (&cosmological_model, &power_spectrum);
     double ratio = 2.0;
-    double a_local = 1.0;
+    double a_local = 0.001;
     int determine = 1;
     int i_initial = 0;
-    power_spectrum.writeBiSpectrumFixExpDamping(&C , a_local, ratio,determine,i_initial);
+    power_spectrum.writeBiSpectrumFull(&C , a_local, ratio,determine,i_initial);
   }
 
   if (determine_program == 7)
@@ -146,7 +147,7 @@ int main ()
     double a_local = 1.0;
     power_spectrum.writeAllSpectrumControl(&C,a_local);
   }
-  
+
   if (determine_program == 8)
   {
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
@@ -167,7 +168,7 @@ int main ()
     double k = 1.0;
     P.Trial(a_local,k);
   }
-  
+
   if (determine_program == 9)
   {
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
@@ -180,6 +181,57 @@ int main ()
     int i_initial =75;
     power_spectrum.writeAllHigherOrder(&C,a_local, k_prime,mu, determine, i_initial);
   }
+  if (determine_program == 10)
+  {
+    double ratio = 2;
+    int determine = 2;
+    int i_iniziale = 68;
+    for (int i_initial= 19; i_initial< 20; i_initial=i_initial+3)
+    {
+      testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
+        i_initial, k0_fixed, sigma_fixed);
+      // power_spectrum.setInitialCondition(i_initial);
+      KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+      for (int a = 4; a<5;a++)
+      {
+        double a_loop = astro::x_logarithmic(a,5,0.001,1.0);
+        power_spectrum.writeBiSpectrumFull(&C,a_loop, ratio, determine,i_iniziale);
+
+        std::cout << "Stop computing, arrived: n = " <<  i_initial << " a = "
+          << a_loop << std::endl;
+
+        usleep(10000000); // sleeps 10 seconds
+        std::cout << "Start computing" << std::endl;
+        i_iniziale = 0; // set again to zero the starting point for the next step of the loop
+        determine = 0;
+      }
+    }
+  }
+  if (determine_program == 11)
+  {
+    double a_local=0.05;
+    double ratio = 2.0;
+    int determine=1;
+    int i_iniziale=0;
+      for (int j = 0; j< 3; j++)
+      {
+        for (int m = 0; m < 10; m++)
+        {
+          double k0_loop = astro::x_logarithmic (double(j), 3.0, 0.01,1.0);
+          double sigma_loop = astro::x_logarithmic (double(m), 10.0, 0.01,1.0);
+          testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter, 0,
+            k0_loop, sigma_loop);
+          KFT::kftCosmology C (&cosmological_model, &power_spectrum);
+          power_spectrum.writeBiSpectrumFull(&C,a_local,ratio,determine,i_iniziale);
+          std::cout << "Stop computing, arrived: k0= "<< k0_loop << " sigma "
+            << sigma_loop << " a = " << a_local  << std::endl;
+          usleep(5000000); // sleeps 5 seconds
+          std::cout << "Start computing" << std::endl;
+          i_iniziale = 0; // set again to zero the starting point for the next step of the loop
+        }
+      }
+  }
+
   return 0;
 }
 
