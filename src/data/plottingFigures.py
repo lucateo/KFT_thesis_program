@@ -1,3 +1,5 @@
+# It automatically plots all figures I need for my thesis
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sys

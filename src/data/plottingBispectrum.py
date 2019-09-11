@@ -1,3 +1,5 @@
+# Program for bispectrum plots
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sys

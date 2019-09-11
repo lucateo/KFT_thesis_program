@@ -52,6 +52,9 @@ class testPowerSpectrum: public astro::powerSpectrum
    * \param sigma8_in the normalization of the power spectrum (usually it is 0.8)
    * \param filter_in The filter to compute \f$ \sigma_8 \f$
    * \param cosmological_model_in pointer to a cosmology model (usually a a standard \f$ \Lambda \f$CDM one
+   * \param initial_condition It determines the initial power spectrum to use
+   * \param k0_gauss It determines the \f$ k_0 \f$ to use in gaussian case
+   * \param k0_gauss It determines the variance \f$ \sigma^2 \f$ to use in gaussian case
    */
   testPowerSpectrum
     (astro::cosmologyBase * cosmological_model_in, const double sigma8_in,
@@ -71,8 +74,8 @@ class testPowerSpectrum: public astro::powerSpectrum
      * (see implementation of operator () for details)
      */
   int m_initial_condition = 4; 
-  double m_sigma_gauss = 1; ///< determines sigma for gauss initial condition
-  double m_gauss_k0 = 0.01; ///< determines  \f$ k_0 \f$ for gauss initial condition
+  double m_sigma_gauss = 1; ///< determines \f$ \sigma \f$ for Gaussian initial condition
+  double m_gauss_k0 = 0.01; ///< determines  \f$ k_0 \f$ for Gaussian initial condition
   double m_gaussNorm; ///< determines \f$ k_0^2/(2 \sigma^2) \f$ factor in gaussian initial condition
   double a_initial = 1.0e-3; ///< deterines the initial time
   const double k_min = 1.0e-3, k_max = 1.0e3; //< determines plotting \f$ k \f$ range
@@ -136,12 +139,12 @@ class powerSpectraModified: public KFT::powerSpectra
   /// Constructor  
   powerSpectraModified(KFT::kftCosmology *cosmology_in);
   /// It computes the \f$ \mathcal{P}_{ij} \f$, with:
-  /// \param mu_ij it is \f$ \mu_{ij} = \vec{L_{p_i}} \cdot \vec{L_{p_j}} \f$
-  /// \param mu_i it is \f$ \mu_{i} = \vec{L_{p_i}} \cdot \vec{K_{ij}} \f$
-  /// \param mu_j it is \f$ \mu_{ij} = \vec{L_{p_j}} \cdot \vec{K_{ij}} \f$
+  /// \param mu_ij it is \f$ \mu_{ij} = \vec{L}_{p_i} \cdot \vec{L}_{p_j} \f$
+  /// \param mu_i it is \f$ \mu_{i} = \vec{L}_{p_i} \cdot \vec{K}_{ij} \f$
+  /// \param mu_j it is \f$ \mu_{ij} = \vec{L}_{p_j} \cdot \vec{K}_{ij} \f$
   double curlyP_ij (double a, double mu_ij, double mu_i, double mu_j, 
       double K_ij, double L_i, double L_j);
-
+  /// Trial functon to print exponential damping factor
   void Trial(double a, double k);
   /// curly P_ij without exponential damping factor (it is not working!)
   double curlyP_ijNoDamping (double a, double mu_ij, double mu_i,
@@ -149,9 +152,11 @@ class powerSpectraModified: public KFT::powerSpectra
   /// To try to correct for bispectrum damping, to put in single \f$ \mathcal{P} \f$
   /// factors
   double DampingBispectrum(double a, double k_factor);
-  /// try to compute \f$ \mathcal{P} \mathcal{P}\mathcal{P}\f$ factor
+  /// try to compute \f$ \mathcal{P} \mathcal{P}\mathcal{P}\f$ factor (incomplete)
   double PPP_term (double k1, double a, double k2, double mu);
 };
 
-/// \f$ 2F_2 \f$ kernel of Eulerian PT
+/// \f$ F_2 \f$ kernel of Eulerian PT adapted for kinetic field theory, it is
+/// \f[ F_2 = 1+ \frac{\vec{k}_1 \cdot \vec{k}_2}{k_1k_2} \qty(\frac{k_1}{k_2} + 
+/// \frac{k_2}{k_1}) + \frac{(\vec{k}_1 \cdot \vec{k}_2)^2}{k^2_1k^2_2}  \f]
 double F2_kernel(double k1,double k2, double mu);

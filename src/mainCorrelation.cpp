@@ -1,19 +1,18 @@
 #include "../include/KFT2.h"
 #include <unistd.h>
 
-/**
- * automatizing correlation computation
-   */
 int main ()
 {
+  // Initial set-up
   astro::cosmologyBase cosmological_model;
   cosmological_model.setDarkUniverse ();
   astro::tophatFilter filter;
 
   // Parameters to look at
   double a = 1;
-  // Initial condition for the loop
+  // Initial power spectrum for the loop
   int i_initial = 310;
+  // Initial conditions for non-loop programs
   double k0_fixed = 10.0;
   double sigma_fixed = 0.215443 ;
   int initial_fixed = 4;
@@ -35,7 +34,6 @@ int main ()
         double a_loop = astro::x_logarithmic (double(j), 5.0, 0.01,1.0);
         testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
           i_initial, k0_fixed, sigma_fixed);
-        // power_spectrum.setInitialCondition(i_initial);
         KFT::kftCosmology C (&cosmological_model, &power_spectrum);
         power_spectrum.writeAllSpectrum(&C,a_loop);
 
@@ -48,7 +46,7 @@ int main ()
       i_initial=i_initial+20;
     }
   }
-  // Loop for gaussian initial condition
+  // Loop for gaussian initial condition, loop for a, sigma, k0
   if (determine_program == 1)
   {
     for (int i=0; i< 2; i++)
@@ -91,6 +89,7 @@ int main ()
     power_spectrum.writeAllGaussian(&C,a);
   }
 
+  // Gaussian initial with loop for sigma only
   if (determine_program == 4)
   {
     for (int i = 0; i<10; i++)
@@ -107,6 +106,7 @@ int main ()
     }
   }
 
+  // Gaussian initial with loop for sigma and a
   if (determine_program == 5)
   {
     for (int i = 0; i<10; i++)
@@ -127,6 +127,7 @@ int main ()
     }
   }
 
+  // Write bispectrum for fixed parameters
   if (determine_program == 6)
   {
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
@@ -139,6 +140,7 @@ int main ()
     power_spectrum.writeBiSpectrumFull(&C , a_local, ratio,determine,i_initial);
   }
 
+  // Check curlyP_ij function
   if (determine_program == 7)
   {
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
@@ -148,6 +150,7 @@ int main ()
     power_spectrum.writeAllSpectrumControl(&C,a_local);
   }
 
+  // Trial function for higher order computations
   if (determine_program == 8)
   {
     testPowerSpectrum power_spectrum (&cosmological_model, 8.0, &filter,
@@ -181,6 +184,8 @@ int main ()
     int i_initial =75;
     power_spectrum.writeAllHigherOrder(&C,a_local, k_prime,mu, determine, i_initial);
   }
+
+  // Loop for a for Dark matter bispectrum
   if (determine_program == 10)
   {
     double ratio = 2;
@@ -207,6 +212,8 @@ int main ()
       }
     }
   }
+
+  // Loop for a for Gaussian bispectrum
   if (determine_program == 11)
   {
     double a_local=0.05;

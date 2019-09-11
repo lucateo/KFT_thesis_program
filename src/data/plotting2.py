@@ -1,3 +1,6 @@
+# Plotting program for plotting every file that corresponds to the shortcut
+# on the variable filepath, it search for the directory where the program is
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sys

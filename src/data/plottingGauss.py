@@ -1,3 +1,5 @@
+# Plotting program for Gaussian initial power spectra
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sys

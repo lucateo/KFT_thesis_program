@@ -54,7 +54,7 @@ void powerSpectraModified::Trial(double a, double k)
     other << " all = " << all << std::endl;
 }
 
-// I should integrate also over angles, crazy!
+// I should integrate also over angles, crazy! It is incomplete
 double powerSpectraModified::PPP_term (double k1, double a,
     double k2, double mu)
 {
@@ -198,10 +198,6 @@ void testPowerSpectrum::writeBiSpectrumFull(KFT::kftCosmology * C, double a,
     double factor1 = k1*k1 + k1*k2*mu;
     double factor2 = k2*k2 + k2*k1*mu;
 
-    // double P_31_0 = P.curlyP_ij(a, -1, 1, -1, k1, k1,k1);
-    // double P_21_0 = P.curlyP_ij(a, mu, 1, mu, k2, k2,k1);
-    // double P_32_0 = P.curlyP_ij(a, -1, 1, -1, k2, k2,k2);
-
     double P_31_1= P.curlyP_ij(a, -factor1/(k1*k3_module) , factor1/(k1*k3_module) ,
         -1,k1,k3_module, k1);
     std::cout << "number = " << i << " mu = " << mu << " factor 2 = " << factor2 << " k3 = " << k3_module << std::endl;
@@ -215,12 +211,13 @@ void testPowerSpectrum::writeBiSpectrumFull(KFT::kftCosmology * C, double a,
     double P_31_3= P.curlyP_ij(a,-factor1/(k1*k3_module),1,-factor1/(k1*k3_module),
         k3_module,k3_module,k1);
     double P_21_3= P.curlyP_ij(a, mu, 1,mu,k2,k2,k1);
-    // To reproduce Bernardeau Q_N
+    
     double P1 = P.curlyP(k1,a);
     double P2 = P.curlyP(k2,a);
     double P3 = P.curlyP(k3_module,a);
     double Q_N_denominator = P1*P2 + P2*P3 + P1*P3;
     double bispectrum = P_31_1*P_32_1 + P_21_2*P_32_2 + P_31_3*P_21_3;
+    
     // For linear Eulerian
     double mu_31 = -(mu*k2*k1 + k1*k1)/(k1*k3_module);
     double mu_32 = -(mu*k2*k1 + k2*k2)/(k2*k3_module);
@@ -279,7 +276,6 @@ void testPowerSpectrum::writeBiSpectrumFixExpDamping(KFT::kftCosmology * C, doub
   P.initCorrelation (ps_table, cf_table);
   double k2 = double(double(k1)/double(ratio));
   std::ofstream outfile;
-  // outfile.open(power_file, std::ios_base::app);
   if (determine == 1 || determine == 0)
   {
     outfile.open(power_file);
